@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hello, WebVR! • A-Frame</title>
+    <meta name="description" content="Hello, WebVR! • A-Frame">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <!-- Componente que usaremos en la esfera(cambiara el material y añadira luz verde y rotara)-->
+    <script>
+        AFRAME.registerComponent('cursor-changecolor', {
+            init: function () {
+                this.el.addEventListener('click', () => {
+                    this.el.setAttribute('material', 'color', 'green')
+                    this.el.setAttribute('animation', 'property:rotation; to:120 120 120; dur:10000; easing:easeInOutQuad; loop: true')
+                    this.el.setAttribute('light', 'type:point; color:green; intensity:1')
+                })
+            }
+        })
+    </script>
+
+  </head>
+  <body>
+    <a-scene background="color: #FAFAFA">
+      <!-- Luz ambiental general para que no ver objetos en sombra-->
+     <a-entity light="type: ambient; color: #CCC"></a-entity>
+
+      <a-assets> <img id = "boxTexture" src = "https://i.imgur.com/mYmmbrp.jpg">
+      <img id = "skyTexture" src = "https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg ">
+      <img id = "cylinderTexture" src = "/t1.jpeg">
+      <img id = "sphereTexture" src = "/t2.jpeg"> </a-assets>
+      <!-- Creamos un asset para generar una textura y luego darsela a cualquier elemento que usemos, en este cas en la caja-->
+      <a-box src = "#boxTexture" position="-1 0.5 -2.5" rotation="0 45 0" shadow></a-box>
+      <a-cylinder src="#cylinderTexture" position="2 0.75 -2.5" radius="0.5" height="1.5"  shadow></a-cylinder>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="6" height="6" color="#7BC8A4" shadow></a-plane>
+      <a-entity id="sphere" cursor-changecolor geometry="primitive: sphere" material="src: /t2.jpeg" position="-2 1.25 -5" radius="1.25"></a-entity>
+      <a-entity
+           geometry="primitive: octahedron"
+           material="color:#FF2D00; shader:flat; src:/t2.jpeg"
+           position="1 1.25 -5"
+           animation__position="property:position; to:3 5 -10; dur:6000; dir:alternate; loop:true; startEvents:click;"
+           animation__rotation="property:rotation; to:360 0 0; dur:12000; easing:easeInOutQuad; dir:alternate; loop:true;"
+           light="type:point; color:red; intensity:2;">
+      </a-entity>
+
+      <a-entity id="lightSphere"
+          geometry="primitive: sphere ;radius:0.25"
+          material="shader: flat"
+          position="5 5 -5"
+          light="type: point; color: blue; intensity:20"
+          animation="property: position; to: -5 4.5 -5; dur:3500; dir: alternate; loop: true">
+      </a-entity>
+
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+      <a-sky  src = "#skyTexture" > </a-sky>
+    </a-scene>
+  </body>
+</html>
