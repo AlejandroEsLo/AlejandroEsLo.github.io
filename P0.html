@@ -9,12 +9,11 @@
 
     <!-- Componente que usaremos en la esfera(cambiara el material y añadira luz verde y rotara)-->
     <script>
-        AFRAME.registerComponent('cursor-changecolor', {
+        AFRAME.registerComponent('cursor-changeposition', {
             init: function () {
                 this.el.addEventListener('click', () => {
+                    this.el.setAttribute('animation', 'property:position; to:1.75 1.85 -4; dur:5000')
                     this.el.setAttribute('material', 'color', 'green')
-                    this.el.setAttribute('animation', 'property:rotation; to:120 120 120; dur:10000; easing:easeInOutQuad; loop: true')
-                    this.el.setAttribute('light', 'type:point; color:green; intensity:1')
                 })
             }
         })
@@ -23,16 +22,11 @@
   </head>
   <body>
     <a-scene background="color: #FAFAFA">
-      <!-- Luz ambiental general para que no ver objetos en sombra-->
-     <a-entity light="type: ambient; color: #FFF"></a-entity>
+      <!-- Creamos entorno para nuestra escena -->
+      <a-entity environment="preset: starry"></a-entity>
+      <a-entity light="type: ambient; color: #FFF"></a-entity>
 
-      <a-gltf-model id = "Servidor"
-        src="gaming_laptop/scene.gltf"
-        position="3 0.5 -4"
-        scale="0.5 0.5 0.5"
-        rotation="0 -90 0">
-      </a-gltf-model>
-
+      <!-- Ordenador CLiente -->
       <a-gltf-model id = "Cliente"
         src="gaming_laptop/scene.gltf"
         position="-3 0.5 -4"
@@ -40,10 +34,32 @@
         rotation="0 -90 0">
       </a-gltf-model>
 
-      <a-entity environment="preset: starry"></a-entity>
-
+      <!-- Ordenador Servidor -->
+      <a-gltf-model id = "Servidor"
+        src="gaming_laptop/scene.gltf"
+        position="3 0.5 -4"
+        scale="0.5 0.5 0.5"
+        rotation="0 -90 0">
+      </a-gltf-model>
 
       <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <!-- Paquetes a enviar -->
+      <a-entity geometry="primitive: box"
+         id = "SYN" cursor-changeposition material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-entity>
+
+    <!--  <a-box id = "SYN_ACK" color="yellow" position="1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
+
+      <a-box id = "ACK_SYN_ACK" color="yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
+
+      <a-box id = "DATOS" color="blie" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
+
+      <a-box id = "ACK_DATOS" color="blue" position="1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
+
+      <a-box id = "FIN" color="red" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
+
+      <a-box id = "ACK_FIN" color="red" position="1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
+-->
     </a-scene>
   </body>
 </html>
