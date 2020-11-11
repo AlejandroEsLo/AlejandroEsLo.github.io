@@ -9,6 +9,8 @@
 
     <!-- Componente que usaremos para mover los paquetes de clientes a servidor-->
     <script>
+        let Lista_Paquetes = ["SYN", "SYN_ACK", "ACK_SYN_ACK", "DATOS", "ACK_DATOS","FIN", "ACK_FIN"]
+
         AFRAME.registerComponent('cursor-changeposition', {
             init: function () {
                 this.el.addEventListener('click', () => {
@@ -26,7 +28,7 @@
       <a-entity environment="preset: starry"></a-entity>
       <a-entity light="type: ambient; color: #FFF"></a-entity>
 
-      <!-- Ordenador CLiente -->
+      <!-- Ordenador Cliente -->
       <a-gltf-model id = "Cliente"
         src="gaming_laptop/scene.gltf"
         position="-3 0.5 -4"
@@ -44,12 +46,26 @@
 
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
+      <a-entity geometry="primitive: sphere" material="color:blue" starter="packet: P" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
+
+      <a-entity id="P" packet="start: 0; end: 20;" from="Cliente"; to="Servidor"></a-entity>
       <!-- Paquetes a enviar -->
       <a-entity geometry="primitive: box"
          id = "SYN" cursor-changeposition material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-entity>
+<!--
+      <a-box id = "SYN_ACK" color="yellow" position="1.75 1.85 -4" scale="0.1 0.1 0.1"
+              packet="start: 0; end: 5000;" from="Servidor"; to="Cliente"shadow></a-box>
+-->
+      <a-entity
+          geometry="primitive: box"
+          material="color:#FF2D00"
+          position="1.75 1.85 -4"
+          scale="0.1 0.1 0.1"
+          animation__position="property:position; to:-1.75 1.85 -4; dur:5000; startEvents:click;">
+      </a-entity>
 
-    <!--  <a-box id = "SYN_ACK" color="yellow" position="1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
 
+  <!--
       <a-box id = "ACK_SYN_ACK" color="yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
 
       <a-box id = "DATOS" color="blie" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
@@ -60,11 +76,22 @@
 
       <a-box id = "ACK_FIN" color="red" position="1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-box>
 
+      console.table(SYN);
 -->
     </a-scene>
 
     <script>
       console.log(Object.values(SYN));
+      console.log(SYN.attributes);
+      console.log(SYN.attributes[4]);
+      const a = SYN.attributes[4];
+      console.log("a = " + a);
+      let string_obj = new String(a)
+      var coordenadas = string_obj.split("");
+      console.log(string_obj);
+      if(string_obj == "position=-1.75 1.85 -4"){
+        console.log("Dentro");
+      }
     </script>
 
   </body>
