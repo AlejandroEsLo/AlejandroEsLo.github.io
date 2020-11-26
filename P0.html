@@ -6,10 +6,12 @@
     <meta name="description" content="Comenzamos">
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
 
-    <!-- Componente que usaremos para mover los paquetes de clientes a servidor-->
+
+    <!-- Componente que usaremos para mover los paquetes de clientes a servidor
     <script>
-        let Lista_Paquetes = ["SYN", "SYN_ACK", "ACK_SYN_ACK", "DATOS", "ACK_DATOS","FIN", "ACK_FIN"]
+        let Lista_Paquetes = ["P_SYN", "P_ACK", "ACK_SYN_ACK", "DATOS", "ACK_DATOS","FIN", "ACK_FIN"]
 
         AFRAME.registerComponent('cursor-changeposition', {
             init: function () {
@@ -19,8 +21,9 @@
                 })
             }
         })
-    </script>
 
+    </script>
+-->
   </head>
   <body>
     <a-scene background="color: #FAFAFA">
@@ -46,23 +49,49 @@
 
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity geometry="primitive: sphere" material="color:blue" starter="packet: P" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
+      <a-entity geometry="primitive: sphere" material="color:blue" position="-1.75 4 -4" scale="0.25 0.25 0.25"
+                  event-set__enter="_event: mouseenter; _target: #P_SYN; color: green"
+                  event-set__enter2="_event: mouseenter; _target: #P_ACK; color: white"
+                  event-set__click="_event: click; _target: #P_SYN; _delay: 5000;position: 2.25 1.85 -4"
+                  event-set__click2="_event: click; _target: #P_ACK; _delay: 5000;position: -2.25 1.85 -4"
+                  animation__position="_target: #P_SYN ;property:position; to: 2 4 -4; dur:5000; startEvents:click;"
+      ></a-entity>
 
-      <a-entity id="P" packet="start: 0; end: 20;" from="Cliente"; to="Servidor"></a-entity>
       <!-- Paquetes a enviar -->
-      <a-entity geometry="primitive: box"
-         id = "SYN" cursor-changeposition material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" shadow></a-entity>
-<!--
-      <a-box id = "SYN_ACK" color="yellow" position="1.75 1.85 -4" scale="0.1 0.1 0.1"
-              packet="start: 0; end: 5000;" from="Servidor"; to="Cliente"shadow></a-box>
--->
-      <a-entity
-          geometry="primitive: box"
+      <a-box id = "P_SYN" material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" >
+      </a-box>
+
+      <a-box
+          id = "P_ACK"
           material="color:#FF2D00"
           position="1.75 1.85 -4"
-          scale="0.1 0.1 0.1"
-          animation__position="property:position; to:-1.75 1.85 -4; dur:5000; startEvents:click;">
-      </a-entity>
+          scale="0.1 0.1 0.1;">
+      </a-box>
+
+
+      <!-- event-set__click="_event: click; _target: #P_SYN; _delay: 5000;position: 2.25 1.85 -4"
+       animation__position="property:position; to:-1.75 1.85 -4; dur:5000; startEvents:click;">
+
+
+      <script>
+
+          action_button.addEventListener("click", click_button);
+
+          function click_button() {
+          	var P1 = document.querySelector("P_SYN");
+            P1.setAttribute('animation', 'property:position; to:1.75 1.85 -4; dur:5000');
+            P1.setAttribute('material', 'color', 'green');
+          }
+
+      </script>-->
+
+      <!--
+      <a-entity id = "action_button" cursor-changeposition geometry="primitive: sphere" material="color:blue" starter="packet: P" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
+
+            <a-entity id="P" packet="start: 0; end: 20;" from="Cliente"; to="Servidor"></a-entity>
+            <a-box id = "SYN_ACK" color="yellow" position="1.75 1.85 -4" scale="0.1 0.1 0.1"
+                    packet="start: 0; end: 5000;" from="Servidor"; to="Cliente"shadow></a-box>
+      -->
 
 
   <!--
@@ -79,12 +108,13 @@
       console.table(SYN);
 -->
     </a-scene>
+    <!--
 
     <script>
-      console.log(Object.values(SYN));
-      console.log(SYN.attributes);
-      console.log(SYN.attributes[4]);
-      const a = SYN.attributes[4];
+      console.log(Object.values(P_SYN));
+      console.log(P_SYN.attributes);
+      console.log(P_SYN.attributes[4]);
+      const a = P_SYN.attributes[4];
       console.log("a = " + a);
       let string_obj = new String(a)
       var coordenadas = string_obj.split("");
@@ -93,6 +123,6 @@
         console.log("Dentro");
       }
     </script>
-
+-->
   </body>
 </html>
