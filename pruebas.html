@@ -22,8 +22,11 @@
             }
         })
 
+        document.getElementById("action_button").onclick = function(event) {}
+
     </script>-->
     <script>
+
     AFRAME.registerComponent('change-color-position', {
       schema: {
         color: {default: 'red'},
@@ -89,11 +92,17 @@
     -->
 
       <!-- Paquetes a enviar -->
-      <a-box id = "P_SYN"change-color-position="position:1.75 1.85 -4" material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" >
+      <a-box id = "P_SYN" change-color-position="position:1.75 1.85 -4" material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" >
       </a-box>
 
-      <a-entity id = "action_button" change-color-position geometry="primitive: sphere" material="color:blue" starter="packet: P" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
+      <a-entity id = "action_button" change-color-position geometry="primitive: sphere" material="color:blue" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
 
+      <script>
+      let button = document.querySelector("action_button");
+      button.addEventListener("click", () => {
+          console.log("Button clicked.");
+      });
+      </script>
 <!--
       <a-box
           id = "P_ACK"

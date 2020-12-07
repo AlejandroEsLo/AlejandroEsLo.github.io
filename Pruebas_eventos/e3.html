@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Ejercicio 2 EVENTOS</title>
+    <meta name="description" content="Comenzamos">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+
+
+  </head>
+  <body>
+    <a-scene background="color: #FAFAFA">
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <script>
+        var scene = document.querySelector('a-scene');
+        var entity1 = document.createElement('a-entity');
+        var entity2 = document.createElement('a-entity');
+
+        // Creamos la caja y agregamos la caja a nuestra escena.
+        scene.appendChild(entity1);
+        scene.appendChild(entity2);
+
+        entity1.setAttribute ( 'geometry', {primitive: 'box', height: 2, width: 2});
+        entity1.setAttribute('material', 'color', 'red');
+        entity1.setAttribute ( 'position' , { x : -5 , y : 2 , z : -10 });
+
+        entity2.setAttribute ( 'geometry', {primitive: 'box', height: 2, width: 2});
+        entity2.setAttribute('material', 'color', 'green');
+        entity2.setAttribute ( 'position' , { x : 5 , y : 2 , z : -10 });
+
+        entity1.addEventListener('click', change_box2);
+          function change_box2()
+          {
+            console.log('Dentro de eventlistener')
+            entity2.setAttribute('geometry',{primitive:'sphere'});
+            entity2.setAttribute('material', 'color', 'yellow');
+          };
+
+      </script>
+
+    </a-scene>
+  </body>
+</html>
