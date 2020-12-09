@@ -22,40 +22,8 @@
             }
         })
 
-        document.getElementById("action_button").onclick = function(event) {}
-
-    </script>-->
-    <script>
-
-    AFRAME.registerComponent('change-color-position', {
-      schema: {
-        color: {default: 'red'},
-        position: {origen: 'x: 1.75, y: 1.85, z: -4'}
-      },
-
-      init: function () {
-        var data = this.data;
-        var el = this.el;  // <a-box>
-        var defaultColor = el.getAttribute('material').color;
-        var posDestino = el.getAttribute('position');
-
-        el.addEventListener('mouseenter', function () {
-          el.setAttribute('color', data.color);
-        });
-
-        el.addEventListener('mouseleave', function () {
-          el.setAttribute('color', defaultColor);
-        });
-
-        el.addEventListener('click', function () {
-          el.setAttribute('animation', 'property:position; to:1.75 1.85 -4; dur:5000');//'position',data.position
-          el.setAttribute('material', 'color', 'green');
-        });
-
-      }
-    });
-  </script>
-
+    </script>
+-->
   </head>
   <body>
     <a-scene background="color: #FAFAFA">
@@ -80,7 +48,6 @@
       </a-gltf-model>
 
       <a-entity cursor="rayOrigin: mouse"></a-entity>
-      <!--
 
       <a-entity geometry="primitive: sphere" material="color:blue" position="-1.75 4 -4" scale="0.25 0.25 0.25"
                   event-set__enter="_event: mouseenter; _target: #P_SYN; color: green"
@@ -89,27 +56,22 @@
                   event-set__click2="_event: click; _target: #P_ACK; _delay: 5000;position: -2.25 1.85 -4"
                   animation__position="_target: #P_SYN ;property:position; to: 2 4 -4; dur:5000; startEvents:click;"
       ></a-entity>
-    -->
 
       <!-- Paquetes a enviar -->
-      <a-box id = "P_SYN" change-color-position="position:1.75 1.85 -4" material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" >
+      <a-box id = "P_SYN" material="color:yellow" position="-1.75 1.85 -4" scale="0.1 0.1 0.1" >
       </a-box>
 
-      <a-entity id = "action_button" change-color-position geometry="primitive: sphere" material="color:blue" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
-
-      <script>
-      let button = document.querySelector("action_button");
-      button.addEventListener("click", () => {
-          console.log("Button clicked.");
-      });
-      </script>
-<!--
       <a-box
           id = "P_ACK"
           material="color:#FF2D00"
           position="1.75 1.85 -4"
           scale="0.1 0.1 0.1;">
       </a-box>
+
+
+      <!-- event-set__click="_event: click; _target: #P_SYN; _delay: 5000;position: 2.25 1.85 -4"
+       animation__position="property:position; to:-1.75 1.85 -4; dur:5000; startEvents:click;">
+
 
       <script>
 
@@ -121,9 +83,9 @@
             P1.setAttribute('material', 'color', 'green');
           }
 
-      </script>
+      </script>-->
 
-
+      <!--
       <a-entity id = "action_button" cursor-changeposition geometry="primitive: sphere" material="color:blue" starter="packet: P" position="-1.75 4 -4" scale="0.25 0.25 0.25"></a-entity>
 
             <a-entity id="P" packet="start: 0; end: 20;" from="Cliente"; to="Servidor"></a-entity>
@@ -146,5 +108,21 @@
       console.table(SYN);
 -->
     </a-scene>
+    <!--
+
+    <script>
+      console.log(Object.values(P_SYN));
+      console.log(P_SYN.attributes);
+      console.log(P_SYN.attributes[4]);
+      const a = P_SYN.attributes[4];
+      console.log("a = " + a);
+      let string_obj = new String(a)
+      var coordenadas = string_obj.split("");
+      console.log(string_obj);
+      if(string_obj == "position=-1.75 1.85 -4"){
+        console.log("Dentro");
+      }
+    </script>
+-->
   </body>
 </html>
