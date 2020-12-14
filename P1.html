@@ -9,17 +9,41 @@
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
 
     <script>
-    AFRAME.registerComponent('manejador', {
+    AFRAME.registerComponent('clickeador', {
       init: function () {
-        console.log('Dentro de MANEJADOR');
-        this.el.setAttribute('animation', 'property:position; to:-1.75 1.85 -4; dur:8000; dir:alternate;')
+        console.log('Dentro de CLICKEADOR');
+        let packet = 'syn';
 
         this.el.addEventListener('click', () => {
-            this.el.setAttribute('animation', 'property:position; to:-1.75 1.85 -4; dur:8000; dir:alternate;')
-          })
+          packet_el = document.getElementById(packet);
+          muevete.throw('packet_el');
+
+          if (packet == 'syn') {
+            packet = 'ack';
+          } else {
+            packet = 'syn';
+          }
+          console.log('paquete activo = ' + packet);
+        })
       }
     });
     </script>
+
+    <script>
+    AFRAME.registerComponent('movedor', {
+      init: function () {
+        console.log('Dentro de MOVEDOR');
+        let el = this.el
+        let data = this.data
+
+        this.el.addEventListener('muevete', () => {
+            el.setAttribute('animation', 'property:position; to:x+10 y z; dur:8000; dir:alternate;');
+          })
+          console.log('direccion = ' + data);
+      }
+    });
+    </script>
+
   </head>
 
   <body>
@@ -53,19 +77,20 @@
         var p_syn = document.createElement('a-entity');
         var p_ack = document.createElement('a-entity');
 
-
-
         boton_accion.setAttribute( 'geometry', {primitive: 'sphere'});
+        boton_accion.setAttribute( 'id', 'boton_accion');
         boton_accion.setAttribute( 'scale', {x : 0.25 , y : 0.25 , z : 0.25});
         boton_accion.setAttribute('material', 'color', 'blue');
         boton_accion.setAttribute( 'position' , { x : -1.75 , y : 4 , z : -4 });
 
         p_syn.setAttribute( 'geometry', {primitive: 'box'});
+        p_syn.setAttribute( 'id', 'syn');
         p_syn.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_syn.setAttribute('material', 'color', 'yellow');
         p_syn.setAttribute( 'position' , { x : -1.75 , y : 1.85 , z : -4 });
 
         p_ack.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack.setAttribute( 'id', 'ack');
         p_ack.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_ack.setAttribute('material', 'color', 'red');
         p_ack.setAttribute( 'position' , { x : 1.75 , y : 1.85 , z : -4 });
@@ -76,15 +101,12 @@
         scene.appendChild(p_syn);
         scene.appendChild(p_ack);
 
-        boton_accion.addEventListener('click', start);
-          function start()
-          {
-            console.log('Dentro de eventlistener')
-            p_syn.setAttribute('material', 'color', 'green');
-            p_syn.setAttribute('animation', 'property:position; to:1.75 1.85 -4; dur:4000; dir:alternate;')
-            p_ack.setAttribute('manejador','');
-            p_syn.setAttribute('manejador','');
-          };
+        // Ver objeto
+        //console.log(scene.querySelector('#ack'));
+
+        boton_accion.setAttribute('clickeador' , '');
+        p_syn.setAttribute('movedor','');
+        p_ack.setAttribute('movedor','');
 
       </script>
     </a-scene>
