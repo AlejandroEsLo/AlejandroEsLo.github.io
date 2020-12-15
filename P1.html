@@ -16,7 +16,7 @@
 
         this.el.addEventListener('click', () => {
           packet_el = document.getElementById(packet);
-          muevete.throw('packet_el');
+          packet_el.emit('muevete');
 
           if (packet == 'syn') {
             packet = 'ack';
@@ -27,9 +27,7 @@
         })
       }
     });
-    </script>
 
-    <script>
     AFRAME.registerComponent('movedor', {
       init: function () {
         console.log('Dentro de MOVEDOR');
@@ -37,9 +35,9 @@
         let data = this.data
 
         this.el.addEventListener('muevete', () => {
-            el.setAttribute('animation', 'property:position; to:x+10 y z; dur:8000; dir:alternate;');
+            el.setAttribute('animation', 'property:position; to:data ; dur:3000; dir:alternate;');
+            console.log('direccion = ' + Object.values(data));
           })
-          console.log('direccion = ' + data);
       }
     });
     </script>
@@ -105,8 +103,8 @@
         //console.log(scene.querySelector('#ack'));
 
         boton_accion.setAttribute('clickeador' , '');
-        p_syn.setAttribute('movedor','');
-        p_ack.setAttribute('movedor','');
+        p_syn.setAttribute('movedor','to: 1.75 1.85 -4');
+        p_ack.setAttribute('movedor','to: -1.75 1.85 -4');
 
       </script>
     </a-scene>
