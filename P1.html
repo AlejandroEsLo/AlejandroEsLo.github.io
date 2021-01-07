@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Primeros Pasos</title>
+    <title>Movimiento de paquetes</title>
     <meta name="description" content="Comenzamos">
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
@@ -33,10 +33,13 @@
         console.log('Dentro de MOVEDOR');
         let el = this.el
         let data = this.data
+        let dir = Object.values(data)
 
         this.el.addEventListener('muevete', () => {
             el.setAttribute('animation', 'property:position; to:data ; dur:3000; dir:alternate;');
-            console.log('direccion = ' + Object.values(data));
+            console.log('data = ' + Object.values(data));
+            console.log('data.to = ' + data.to)
+            console.log('dir = ' + dir)
           })
       }
     });
@@ -94,7 +97,7 @@
         p_ack.setAttribute( 'position' , { x : 1.75 , y : 1.85 , z : -4 });
 
 
-        // Creamos objetos y los agregamos a nuestra escena.
+        // Agregamos los objetos a nuestra escena.
         scene.appendChild(boton_accion);
         scene.appendChild(p_syn);
         scene.appendChild(p_ack);
