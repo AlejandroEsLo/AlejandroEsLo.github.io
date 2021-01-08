@@ -10,6 +10,9 @@
 
     <script>
     AFRAME.registerComponent('clickeador', {
+      schema: {
+        to:{type: 'vec3'}
+      },
       init: function () {
         console.log('Dentro de CLICKEADOR');
         let packet = 'syn';
@@ -17,29 +20,47 @@
         this.el.addEventListener('click', () => {
           packet_el = document.getElementById(packet);
           packet_el.emit('muevete');
+          console.log('paquete activo = ' + packet);
 
           if (packet == 'syn') {
             packet = 'ack';
-          } else {
+          } else if (packet == 'ack') {
+            packet = 'ack2';
+          }else if (packet == 'ack2') {
+            packet = 'datos';
+          }else if (packet == 'datos') {
+            packet = 'ack_datos';
+          }else if (packet == 'ack_datos') {
+            packet = 'fin';
+          }else if (packet == 'fin') {
+            packet = 'ack_fin';
+          }else {
             packet = 'syn';
           }
-          console.log('paquete activo = ' + packet);
         })
       }
     });
 
     AFRAME.registerComponent('movedor', {
+      schema: {
+        to:{type: 'vec3'}
+      },
       init: function () {
         console.log('Dentro de MOVEDOR');
         let el = this.el
         let data = this.data
-        let dir = Object.values(data)
+        let dir = Object.values(data.to)
 
         this.el.addEventListener('muevete', () => {
-            el.setAttribute('animation', 'property:position; to:data ; dur:3000; dir:alternate;');
-            console.log('data = ' + Object.values(data));
-            console.log('data.to = ' + data.to)
+            el.setAttribute('animation', 'property:position; to:data.to ; dur:3000; dir:alternate;');
+            el.setAttribute('material', 'color', 'green')
+            // Hacer desaparecer el paquete al llegar al destino
+        //      if (el.position == data.to) {
+        //      el.setAttribute('material', 'opacity:0');
+        //    }
+            console.log('data.to = ' + Object.values(data.to));
             console.log('dir = ' + dir)
+            console.log('el.position = ' + el.position)
           })
       }
     });
@@ -74,9 +95,14 @@
       <script>
         var scene = document.querySelector('a-scene');
         var boton_accion = document.createElement('a-entity');
-        // Paquetes a enviar
+        // Paquetes a enviar ["P_SYN", "P_ACK", "ACK_SYN_ACK", "DATOS", "ACK_DATOS","FIN", "ACK_FIN"]
         var p_syn = document.createElement('a-entity');
         var p_ack = document.createElement('a-entity');
+        var p_ack2 = document.createElement('a-entity');
+        var p_datos = document.createElement('a-entity');
+        var p_ack_datos = document.createElement('a-entity');
+        var p_fin = document.createElement('a-entity');
+        var p_ack_fin = document.createElement('a-entity');
 
         boton_accion.setAttribute( 'geometry', {primitive: 'sphere'});
         boton_accion.setAttribute( 'id', 'boton_accion');
@@ -96,18 +122,59 @@
         p_ack.setAttribute('material', 'color', 'red');
         p_ack.setAttribute( 'position' , { x : 1.75 , y : 1.85 , z : -4 });
 
+        p_ack2.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack2.setAttribute( 'id', 'ack2');
+        p_ack2.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack2.setAttribute('material', 'color', 'yellow');
+        p_ack2.setAttribute( 'position' , { x : -1.95 , y : 1.85 , z : -4 });
+
+        p_datos.setAttribute( 'geometry', {primitive: 'box'});
+        p_datos.setAttribute( 'id', 'datos');
+        p_datos.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_datos.setAttribute('material', 'color', 'yellow');
+        p_datos.setAttribute( 'position' , { x : -2.15 , y : 1.85 , z : -4 });
+
+        p_ack_datos.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack_datos.setAttribute( 'id', 'ack_datos');
+        p_ack_datos.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack_datos.setAttribute('material', 'color', 'red');
+        p_ack_datos.setAttribute( 'position' , { x : 1.95 , y : 1.85 , z : -4 });
+
+        p_fin.setAttribute( 'geometry', {primitive: 'box'});
+        p_fin.setAttribute( 'id', 'fin');
+        p_fin.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_fin.setAttribute('material', 'color', 'yellow');
+        p_fin.setAttribute( 'position' , { x : -2.35 , y : 1.85 , z : -4 });
+
+        p_ack_fin.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack_fin.setAttribute( 'id', 'ack_fin');
+        p_ack_fin.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack_fin.setAttribute('material', 'color', 'red');
+        p_ack_fin.setAttribute( 'position' , { x : 2.15 , y : 1.85 , z : -4 });
 
         // Agregamos los objetos a nuestra escena.
         scene.appendChild(boton_accion);
         scene.appendChild(p_syn);
         scene.appendChild(p_ack);
-
+        scene.appendChild(p_ack2);
+        scene.appendChild(p_datos);
+        scene.appendChild(p_ack_datos);
+        scene.appendChild(p_fin);
+        scene.appendChild(p_ack_fin);
         // Ver objeto
         //console.log(scene.querySelector('#ack'));
 
         boton_accion.setAttribute('clickeador' , '');
-        p_syn.setAttribute('movedor','to: 1.75 1.85 -4');
+        p_syn.setAttribute('movedor','to','1.75 1.85 -4');
         p_ack.setAttribute('movedor','to: -1.75 1.85 -4');
+        p_ack2.setAttribute('movedor','to','1.75 1.85 -4');
+        p_datos.setAttribute('movedor','to','1.75 1.85 -4');
+        p_ack_datos.setAttribute('movedor','to','-1.75 1.85 -4');
+        p_fin.setAttribute('movedor','to','1.75 1.85 -4');
+        p_ack_fin.setAttribute('movedor','to','-1.75 1.85 -4');
+
+        // Ver objeto
+        console.log(scene.querySelector('#syn'));
 
       </script>
     </a-scene>
