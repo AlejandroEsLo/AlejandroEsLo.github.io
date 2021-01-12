@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Part 2</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+
+    <script>
+    AFRAME.registerComponent('clicker', {
+      schema: {
+        to:{type: 'vec3'}
+      },
+      init: function () {
+        console.log('In to the clicker');
+        let packet = 'syn';
+
+        this.el.addEventListener('click', () => {
+          packet_el = document.getElementById(packet);
+          packet_el.emit('moving_packages');
+          console.log('packages active = ' + packet);
+
+          if (packet == 'syn') {
+            packet = 'ack';
+          } else if (packet == 'ack') {
+            packet = 'ack2';
+          }else if (packet == 'ack2') {
+            packet = 'datos';
+          }else if (packet == 'datos') {
+            packet = 'ack_data';
+          }else if (packet == 'ack_data') {
+            packet = 'fin';
+          }else if (packet == 'fin') {
+            packet = 'ack_fin';
+          }else {
+            packet = 'syn';
+          }
+        })
+      }
+    });
+
+    AFRAME.registerComponent('move', {
+      schema: {
+        to:{type: 'vec3'}
+      },
+      init: function () {
+        console.log('In to the MOVE');
+        let el = this.el
+        let data = this.data
+        let dir = Object.values(data.to)
+
+        this.el.addEventListener('moving_packages', () => {
+            console.log('First value to DATA.to = ' , data.to);
+            el.setAttribute('animation', {property:'position', to:data.to , dur:3000, dir:'alternate'});
+            el.setAttribute('material', 'color', 'green')
+            // Make the package disappear upon arrival at the destination
+        //      if (el.position == data.to) {
+        //      el.setAttribute('material', 'opacity:0');
+        //    }
+            console.log('el.position = ' + el.position)
+          })
+      }
+    });
+    </script>
+
+  </head>
+
+  <body>
+    <a-scene background="color: #FAFAFA">
+
+      <a-entity environment="preset: starry"></a-entity>
+      <a-entity light="type: ambient; color: #FFF"></a-entity>
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <!-- Client Computer -->
+      <a-gltf-model id = "Cliente"
+        src="gaming_laptop/scene.gltf"
+        position="-3 0.5 -4"
+        scale="0.5 0.5 0.5"
+        rotation="0 -90 0">
+      </a-gltf-model>
+
+      <!-- Server Computer -->
+      <a-gltf-model id = "Servidor"
+        src="gaming_laptop/scene.gltf"
+        position="3 0.5 -4"
+        scale="0.5 0.5 0.5"
+        rotation="0 -90 0">
+      </a-gltf-model>
+
+      <script>
+        var scene = document.querySelector('a-scene');
+        var button_action = document.createElement('a-entity');
+        // Paquets to sent ["P_SYN", "P_ACK", "ACK_SYN_ACK", "DATOS", "ACK_DATA","FIN", "ACK_FIN"]
+        var p_syn = document.createElement('a-entity');
+        var p_ack = document.createElement('a-entity');
+        var p_ack2 = document.createElement('a-entity');
+        var p_datos = document.createElement('a-entity');
+        var p_ack_data = document.createElement('a-entity');
+        var p_fin = document.createElement('a-entity');
+        var p_ack_fin = document.createElement('a-entity');
+
+        // Pipe to connect between computers
+        var pipeline = document.createElement('a-entity');
+
+        button_action.setAttribute( 'geometry', {primitive: 'sphere'});
+        button_action.setAttribute( 'id', 'button_action');
+        button_action.setAttribute( 'scale', {x : 0.25 , y : 0.25 , z : 0.25});
+        button_action.setAttribute('material', 'color', 'blue');
+        button_action.setAttribute( 'position' , { x : -1.75 , y : 4 , z : -4 });
+
+        p_syn.setAttribute( 'geometry', {primitive: 'box'});
+        p_syn.setAttribute( 'id', 'syn');
+        p_syn.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_syn.setAttribute('material', 'color', 'yellow');
+        p_syn.setAttribute( 'position' , { x : -1.75 , y : 1.85 , z : -4 });
+
+        p_ack.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack.setAttribute( 'id', 'ack');
+        p_ack.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack.setAttribute('material', 'color', 'red');
+        p_ack.setAttribute( 'position' , { x : 1.75 , y : 1.85 , z : -4 });
+
+        p_ack2.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack2.setAttribute( 'id', 'ack2');
+        p_ack2.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack2.setAttribute('material', 'color', 'yellow');
+        p_ack2.setAttribute( 'position' , { x : -1.95 , y : 1.85 , z : -4 });
+
+        p_datos.setAttribute( 'geometry', {primitive: 'box'});
+        p_datos.setAttribute( 'id', 'datos');
+        p_datos.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_datos.setAttribute('material', 'color', 'yellow');
+        p_datos.setAttribute( 'position' , { x : -2.15 , y : 1.85 , z : -4 });
+
+        p_ack_data.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack_data.setAttribute( 'id', 'ack_data');
+        p_ack_data.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack_data.setAttribute('material', 'color', 'red');
+        p_ack_data.setAttribute( 'position' , { x : 1.95 , y : 1.85 , z : -4 });
+
+        p_fin.setAttribute( 'geometry', {primitive: 'box'});
+        p_fin.setAttribute( 'id', 'fin');
+        p_fin.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_fin.setAttribute('material', 'color', 'yellow');
+        p_fin.setAttribute( 'position' , { x : -2.35 , y : 1.85 , z : -4 });
+
+        p_ack_fin.setAttribute( 'geometry', {primitive: 'box'});
+        p_ack_fin.setAttribute( 'id', 'ack_fin');
+        p_ack_fin.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
+        p_ack_fin.setAttribute('material', 'color', 'red');
+        p_ack_fin.setAttribute( 'position' , { x : 2.15 , y : 1.85 , z : -4 });
+
+        pipeline.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline.setAttribute( 'id', 'pipeline');
+        pipeline.setAttribute( 'scale', {x : 0.1 , y : 3 , z : 0.1});
+        pipeline.setAttribute('material', 'color', 'cyan');
+        pipeline.setAttribute('material', 'opacity', '0.15');
+        pipeline.setAttribute('rotation', {x: 90, y: 90, z: 0});
+        pipeline.setAttribute( 'position' , { x : 0 , y : 1.85 , z : -4 });
+
+        // We add the objects to our scene
+        scene.appendChild(button_action);
+        scene.appendChild(p_syn);
+        scene.appendChild(p_ack);
+        scene.appendChild(p_ack2);
+        scene.appendChild(p_datos);
+        scene.appendChild(p_ack_data);
+        scene.appendChild(p_fin);
+        scene.appendChild(p_ack_fin);
+        scene.appendChild(pipeline);
+
+        button_action.setAttribute('clicker' , '');
+        p_syn.setAttribute('move','to','1.75 1.85 -4');
+        p_ack.setAttribute('move','to', '-1.75 1.85 -4');
+        p_ack2.setAttribute('move','to','1.75 1.85 -4');
+        p_datos.setAttribute('move','to','1.75 1.85 -4');
+        p_ack_data.setAttribute('move','to','-1.75 1.85 -4');
+        p_fin.setAttribute('move','to','1.75 1.85 -4');
+        p_ack_fin.setAttribute('move','to','-1.75 1.85 -4');
+
+        // Watch object
+        //console.log(scene.querySelector('#syn'));
+
+      </script>
+    </a-scene>
+  </body>
+</html>
