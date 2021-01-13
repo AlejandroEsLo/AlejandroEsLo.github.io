@@ -69,26 +69,51 @@
 
   <body>
     <a-scene background="color: #FAFAFA">
-
+      <a-camera position="0 5 5"></a-camera>
       <a-entity environment="preset: starry"></a-entity>
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
       <!-- Client Computer -->
-      <a-gltf-model id = "Cliente"
+      <a-gltf-model id = "Client"
         src="gaming_laptop/scene.gltf"
-        position="-3 0.5 -4"
+        position="-8 0.5 -4"
         scale="0.5 0.5 0.5"
         rotation="0 -90 0">
       </a-gltf-model>
 
       <!-- Server Computer -->
-      <a-gltf-model id = "Servidor"
+      <a-gltf-model id = "Server"
         src="gaming_laptop/scene.gltf"
-        position="3 0.5 -4"
+        position="8 0.5 -4"
         scale="0.5 0.5 0.5"
         rotation="0 -90 0">
       </a-gltf-model>
+
+      <!-- Link Computer 1 -->
+      <a-gltf-model id = "Computer_link1"
+        src="gaming_laptop/scene.gltf"
+        position="-8 0.5 -20"
+        scale="0.5 0.5 0.5"
+        rotation="0 -90 0">
+      </a-gltf-model>
+
+      <!-- Link Computer 2 -->
+      <a-gltf-model id = "Computer_link2"
+        src="gaming_laptop/scene.gltf"
+        position="8 0.5 -20"
+        scale="0.5 0.5 0.5"
+        rotation="0 -90 0">
+      </a-gltf-model>
+
+      <!-- Link Computer Center -->
+      <a-gltf-model id = "Computer_linkCenter"
+        src="gaming_laptop/scene.gltf"
+        position="0 0.5 -12"
+        scale="0.5 0.5 0.5"
+        rotation="0 -90 0">
+      </a-gltf-model>
+
 
       <script>
         var scene = document.querySelector('a-scene');
@@ -104,62 +129,80 @@
 
         // Pipe to connect between computers
         var pipeline = document.createElement('a-entity');
+        var pipeline_ClientToCenter = document.createElement('a-entity');
+        var pipeline_ServerToCenter = document.createElement('a-entity');
 
         button_action.setAttribute( 'geometry', {primitive: 'sphere'});
         button_action.setAttribute( 'id', 'button_action');
         button_action.setAttribute( 'scale', {x : 0.25 , y : 0.25 , z : 0.25});
         button_action.setAttribute('material', 'color', 'blue');
-        button_action.setAttribute( 'position' , { x : -1.75 , y : 4 , z : -4 });
+        button_action.setAttribute( 'position' , { x : -10 , y : 4 , z : -4 });
 
         p_syn.setAttribute( 'geometry', {primitive: 'box'});
         p_syn.setAttribute( 'id', 'syn');
         p_syn.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_syn.setAttribute('material', 'color', 'yellow');
-        p_syn.setAttribute( 'position' , { x : -1.75 , y : 1.85 , z : -4 });
+        p_syn.setAttribute( 'position' , { x : -8 , y : 2 , z : -4.8 });
 
         p_ack.setAttribute( 'geometry', {primitive: 'box'});
         p_ack.setAttribute( 'id', 'ack');
         p_ack.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_ack.setAttribute('material', 'color', 'red');
-        p_ack.setAttribute( 'position' , { x : 1.75 , y : 1.85 , z : -4 });
+        p_ack.setAttribute( 'position' , { x : 8 , y : 2 , z : -4.8 });
 
         p_ack2.setAttribute( 'geometry', {primitive: 'box'});
         p_ack2.setAttribute( 'id', 'ack2');
         p_ack2.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_ack2.setAttribute('material', 'color', 'yellow');
-        p_ack2.setAttribute( 'position' , { x : -1.95 , y : 1.85 , z : -4 });
+        p_ack2.setAttribute( 'position' , { x : -8 , y : 2 , z : -4.8 });
 
         p_datos.setAttribute( 'geometry', {primitive: 'box'});
         p_datos.setAttribute( 'id', 'datos');
         p_datos.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_datos.setAttribute('material', 'color', 'yellow');
-        p_datos.setAttribute( 'position' , { x : -2.15 , y : 1.85 , z : -4 });
+        p_datos.setAttribute( 'position' , { x : -8 , y : 2 , z : -4.8 });
 
         p_ack_data.setAttribute( 'geometry', {primitive: 'box'});
         p_ack_data.setAttribute( 'id', 'ack_data');
         p_ack_data.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_ack_data.setAttribute('material', 'color', 'red');
-        p_ack_data.setAttribute( 'position' , { x : 1.95 , y : 1.85 , z : -4 });
+        p_ack_data.setAttribute( 'position' , { x : 0 , y : 2 , z : -12.8 });
 
         p_fin.setAttribute( 'geometry', {primitive: 'box'});
         p_fin.setAttribute( 'id', 'fin');
         p_fin.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_fin.setAttribute('material', 'color', 'yellow');
-        p_fin.setAttribute( 'position' , { x : -2.35 , y : 1.85 , z : -4 });
+        p_fin.setAttribute( 'position' , { x : -8 , y : 2 , z : -4.8 });
 
         p_ack_fin.setAttribute( 'geometry', {primitive: 'box'});
         p_ack_fin.setAttribute( 'id', 'ack_fin');
         p_ack_fin.setAttribute( 'scale', {x : 0.1 , y : 0.1 , z : 0.1});
         p_ack_fin.setAttribute('material', 'color', 'red');
-        p_ack_fin.setAttribute( 'position' , { x : 2.15 , y : 1.85 , z : -4 });
+        p_ack_fin.setAttribute( 'position' , { x : 8 , y : 2 , z : -4.8 });
 
         pipeline.setAttribute( 'geometry', {primitive: 'cylinder'});
         pipeline.setAttribute( 'id', 'pipeline');
-        pipeline.setAttribute( 'scale', {x : 0.1 , y : 3 , z : 0.1});
+        pipeline.setAttribute( 'scale', {x : 0.1 , y : 15 , z : 0.1});
         pipeline.setAttribute('material', 'color', 'cyan');
         pipeline.setAttribute('material', 'opacity', '0.15');
         pipeline.setAttribute('rotation', {x: 90, y: 90, z: 0});
-        pipeline.setAttribute( 'position' , { x : 0 , y : 1.85 , z : -4 });
+        pipeline.setAttribute( 'position' , { x : 0 , y : 2 , z : -4.8 });
+
+        pipeline_ClientToCenter.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline_ClientToCenter.setAttribute( 'id', 'pipeline_ClientToCenter');
+        pipeline_ClientToCenter.setAttribute( 'scale', {x : 0.1 , y : 10 , z : 0.1});
+        pipeline_ClientToCenter.setAttribute('material', 'color', 'cyan');
+        pipeline_ClientToCenter.setAttribute('material', 'opacity', '0.15');
+        pipeline_ClientToCenter.setAttribute('rotation', {x: 90, y: -45, z: 0});
+        pipeline_ClientToCenter.setAttribute( 'position' , { x : -4 , y : 2 , z : -8.8 });
+
+        pipeline_ServerToCenter.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline_ServerToCenter.setAttribute( 'id', 'pipeline_ServerToCenter');
+        pipeline_ServerToCenter.setAttribute( 'scale', {x : 0.1 , y : 10, z : 0.1});
+        pipeline_ServerToCenter.setAttribute('material', 'color', 'cyan');
+        pipeline_ServerToCenter.setAttribute('material', 'opacity', '0.15');
+        pipeline_ServerToCenter.setAttribute('rotation', {x: 90, y: 45, z: 0});
+        pipeline_ServerToCenter.setAttribute( 'position' , { x : 4, y : 2 , z : -8.8 });
 
         // We add the objects to our scene
         scene.appendChild(button_action);
@@ -171,15 +214,17 @@
         scene.appendChild(p_fin);
         scene.appendChild(p_ack_fin);
         scene.appendChild(pipeline);
+        scene.appendChild(pipeline_ClientToCenter);
+        scene.appendChild(pipeline_ServerToCenter);
 
         button_action.setAttribute('clicker' , '');
-        p_syn.setAttribute('move','to','1.75 1.85 -4');
-        p_ack.setAttribute('move','to', '-1.75 1.85 -4');
-        p_ack2.setAttribute('move','to','1.75 1.85 -4');
-        p_datos.setAttribute('move','to','1.75 1.85 -4');
-        p_ack_data.setAttribute('move','to','-1.75 1.85 -4');
-        p_fin.setAttribute('move','to','1.75 1.85 -4');
-        p_ack_fin.setAttribute('move','to','-1.75 1.85 -4');
+        p_syn.setAttribute('move','to','0 2 -12.8');
+        p_ack.setAttribute('move','to', '0 2 -12.8');
+        p_ack2.setAttribute('move','to','8 2 -4.8');
+        p_datos.setAttribute('move','to','8 2 -4.8');
+        p_ack_data.setAttribute('move','to','-8 2 -4.8');
+        p_fin.setAttribute('move','to','8 2 -4.8');
+        p_ack_fin.setAttribute('move','to','-8 2 -4.8');
 
         // Watch object
         //console.log(scene.querySelector('#syn'));
