@@ -128,11 +128,14 @@
         var p_ack_fin = document.createElement('a-entity');
 
         // Pipe to connect between computers
-        var pipeline = document.createElement('a-entity');
+        var pipeline_ahead = document.createElement('a-entity');
+        var pipeline_behind = document.createElement('a-entity');
         var pipeline_ClientToCenter = document.createElement('a-entity');
         var pipeline_ServerToCenter = document.createElement('a-entity');
         var pipeline_Computer_link1ToCenter = document.createElement('a-entity');
         var pipeline_Computer_link2ToCenter = document.createElement('a-entity');
+        var pipeline_right = document.createElement('a-entity');
+        var pipeline_left = document.createElement('a-entity');
 
         button_action.setAttribute( 'geometry', {primitive: 'sphere'});
         button_action.setAttribute( 'id', 'button_action');
@@ -182,13 +185,21 @@
         p_ack_fin.setAttribute('material', 'color', 'red');
         p_ack_fin.setAttribute( 'position' , { x : -8 , y : 2 , z : -4.8 });
 
-        pipeline.setAttribute( 'geometry', {primitive: 'cylinder'});
-        pipeline.setAttribute( 'id', 'pipeline');
-        pipeline.setAttribute( 'scale', {x : 0.1 , y : 15 , z : 0.1});
-        pipeline.setAttribute('material', 'color', 'cyan');
-        pipeline.setAttribute('material', 'opacity', '0.15');
-        pipeline.setAttribute('rotation', {x: 90, y: 90, z: 0});
-        pipeline.setAttribute( 'position' , { x : 0 , y : 2 , z : -4.8 });
+        pipeline_ahead.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline_ahead.setAttribute( 'id', 'pipeline_ahead');
+        pipeline_ahead.setAttribute( 'scale', {x : 0.1 , y : 15 , z : 0.1});
+        pipeline_ahead.setAttribute('material', 'color', 'cyan');
+        pipeline_ahead.setAttribute('material', 'opacity', '0.15');
+        pipeline_ahead.setAttribute('rotation', {x: 90, y: 90, z: 0});
+        pipeline_ahead.setAttribute( 'position' , { x : 0 , y : 2 , z : -4.8 });
+
+        pipeline_behind.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline_behind.setAttribute( 'id', 'pipeline_behind');
+        pipeline_behind.setAttribute( 'scale', {x : 0.1 , y : 15 , z : 0.1});
+        pipeline_behind.setAttribute('material', 'color', 'cyan');
+        pipeline_behind.setAttribute('material', 'opacity', '0.15');
+        pipeline_behind.setAttribute('rotation', {x: 90, y: 90, z: 0});
+        pipeline_behind.setAttribute( 'position' , { x : 0 , y : 2 , z : -20.8 });
 
         pipeline_ClientToCenter.setAttribute( 'geometry', {primitive: 'cylinder'});
         pipeline_ClientToCenter.setAttribute( 'id', 'pipeline_ClientToCenter');
@@ -222,6 +233,22 @@
         pipeline_Computer_link2ToCenter.setAttribute('rotation', {x: 90, y: 45, z: 90});
         pipeline_Computer_link2ToCenter.setAttribute( 'position' , { x : 4, y : 2 , z : -16.8 });
 
+        pipeline_right.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline_right.setAttribute( 'id', 'pipeline_right');
+        pipeline_right.setAttribute( 'scale', {x : 0.1 , y : 15 , z : 0.1});
+        pipeline_right.setAttribute('material', 'color', 'cyan');
+        pipeline_right.setAttribute('material', 'opacity', '0.15');
+        pipeline_right.setAttribute('rotation', {x: 90, y: 90, z: 90});
+        pipeline_right.setAttribute( 'position' , { x : 8 , y : 2 , z : -12.8 });
+
+        pipeline_left.setAttribute( 'geometry', {primitive: 'cylinder'});
+        pipeline_left.setAttribute( 'id', 'pipeline_left');
+        pipeline_left.setAttribute( 'scale', {x : 0.1 , y : 15 , z : 0.1});
+        pipeline_left.setAttribute('material', 'color', 'cyan');
+        pipeline_left.setAttribute('material', 'opacity', '0.15');
+        pipeline_left.setAttribute('rotation', {x: 90, y: 90, z: 90});
+        pipeline_left.setAttribute( 'position' , { x : -8 , y : 2 , z : -12.8 });
+
         // We add the objects to our scene
         scene.appendChild(button_action);
         scene.appendChild(p_syn);
@@ -231,17 +258,20 @@
         scene.appendChild(p_ack_data);
         scene.appendChild(p_fin);
         scene.appendChild(p_ack_fin);
-        scene.appendChild(pipeline);
+        scene.appendChild(pipeline_ahead);
+        scene.appendChild(pipeline_behind);
         scene.appendChild(pipeline_ClientToCenter);
         scene.appendChild(pipeline_ServerToCenter);
         scene.appendChild(pipeline_Computer_link1ToCenter);
         scene.appendChild(pipeline_Computer_link2ToCenter);
+        scene.appendChild(pipeline_right);
+        scene.appendChild(pipeline_left);
 
         button_action.setAttribute('clicker' , '');
         p_syn.setAttribute('move','to','0 2 -12.8');
         p_ack.setAttribute('move','to', '0 2 -12.8');
-        p_ack2.setAttribute('move','to','8 2 -4.8');
-        p_datos.setAttribute('move','to','8 2 -4.8');
+        p_ack2.setAttribute('move','to','8 2 -20.8');
+        p_datos.setAttribute('move','to','-8 2 -20.8');
         p_ack_data.setAttribute('move','to','-8 2 -4.8');
         p_fin.setAttribute('move','to','8 2 -4.8');
         p_ack_fin.setAttribute('move','to','8 2 -20.8');
