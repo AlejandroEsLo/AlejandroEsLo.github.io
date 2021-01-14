@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>lectura JSON</title>
+    <meta name="description" content="Start">
+  </head>
+
+  <body>
+    <script type="text/javascript">
+    const request = new XMLHttpRequest();
+    const requestURL = '/http_ejemplo.json';
+
+    request.open('GET', requestURL);
+    request.responseType = 'text';
+    request.send();
+
+    request.onload = function() {
+      const dataTXT = request.response; // We take the response string
+      const data = JSON.parse(dataTXT); // We convert it to an object
+      console.log(data);
+
+      // Return data as string
+      //console.log(JSON.stringify(data);
+
+      // We get keys from our dictionary
+      let claves = Object.keys(data);
+      console.log(claves);
+
+      for(key in data["0"]._source){
+        console.log(data["0"]._source[key]);
+        const acces1 = data["0"]._source[key].eth
+        console.log(acces1);
+
+        //Destination Address
+        const eth_dst = Object.values(acces1)[0]
+        console.log("Destination Address => " + eth_dst);
+        //Source Address
+        const eth_src = Object.values(acces1)[2]
+        console.log("Source Address => " + eth_src);
+      }
+    }
+    </script>
+  </body>
+</html>
