@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Reading Json</title>
-    <meta name="description" content="Start">
-  </head>
 
-  <body>
-    <script type="text/javascript">
     const request = new XMLHttpRequest();
     const requestURL = '/http_ejemplo.json';
 
@@ -56,6 +47,3 @@
         }
       }
     }
-    </script>
-  </body>
-</html>
