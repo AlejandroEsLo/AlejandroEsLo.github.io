@@ -48,11 +48,11 @@
         for(key in data[i]._source){
           let acces2 = data[i]._source[key].ip
           //Destination Address
-          let eth_dst = Object.values(acces2)[14]
-          console.log("Ip Address " + i + " => " + eth_dst);
+          let ip_dst = Object.values(acces2)[14]
+          console.log("Ip Address " + i + " => " + ip_dst);
           //Source Address
-          let eth_src = Object.values(acces2)[13]
-          console.log("Ip Source Address " + i + " => " + eth_src);
+          let ip_src = Object.values(acces2)[13]
+          console.log("Ip Source Address " + i + " => " + ip_src);
         }
       }
     }
