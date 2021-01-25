@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Demo1 Component PACKET</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+
+    </script>
+    <script>
+    AFRAME.registerComponent('node', {
+      schema: {
+        obj_type: {type: 'string', default: 'box'},
+        color: {type: 'color', default: 'blue'}
+      },
+      init: function () {
+        console.log('In to the NODE Component');
+        let el = this.el
+        let data = this.data
+        //let geo = Object.values(data.obj_type)
+        //console.log('Value to data.geometry = ' , data.obj_type);
+        el.setAttribute('geometry', {primitive: data.obj_type});
+        el.setAttribute('material', 'color', data.color);
+      }
+    });
+
+    AFRAME.registerComponent('connection', {
+      schema: {
+        from:{type: 'string'},
+        to:{type: 'string'},
+        pos_connection:{type: 'vec3'}
+      },
+      init: function () {
+        console.log("-------------CONNECTION Component---------------");
+
+        let el = this.el
+        let data = this.data
+        let node_from = data.from
+        let node_to = data.to
+
+        // We obtain position Node From
+        let node_from_el = document.getElementById(node_from);
+        let pos1 = node_from_el.getAttribute('position');
+        let pos_from = Object.values(pos1);
+        console.log('Position from = ' + pos_from);
+
+        // We obtain position Node To
+        let node_to_el = document.getElementById(node_to);
+        let pos2 = node_to_el.getAttribute('position');
+        let pos_to = Object.values(pos2);
+        console.log('Position to = ' + pos_to);
+
+        //We calculate the midpoint of the 2 nodes
+        middle_position = [(pos_from[0]+pos_to[0])/2 , (pos_from[1]+pos_to[1])/2, (pos_from[2]+pos_to[2])/2]
+        console.log('Middle position = ' , middle_position);
+
+        //We calculate the distance between the two nodes to know how long the connection will be
+        connection_length = Math.sqrt(Math.pow(pos_from[0]-pos_to[0], 2) +
+        Math.pow(pos_from[1]-pos_to[1], 2) + Math.pow(pos_from[2]-pos_to[2], 2))
+        console.log('Connection length= ' , connection_length);
+
+        data.pos_connection.x = middle_position[0];
+        data.pos_connection.y = middle_position[1];
+        data.pos_connection.z = middle_position[2];
+        console.log('Position of connection = ' , data.pos_connection);
+
+        el.setAttribute('geometry', {primitive: 'cylinder'});
+        el.setAttribute('material', 'color', 'cyan');
+        el.setAttribute('material', 'opacity', '0.15');
+        el.setAttribute('rotation', {x: 90, y: 90, z: 0});
+        el.setAttribute( 'scale', {x : 0.1 , y : connection_length , z : 0.1});
+        el.setAttribute('position', data.pos_connection);
+
+      }
+    });
+
+
+    AFRAME.registerComponent('packet', {
+      schema: {
+        duration: {type: 'number', default: '3000'},
+        direction: {type: 'string', default: 'direct'},
+        color: {type: 'color', default: 'black'},
+        pos_ini:{type: 'vec3'},
+        pos_end:{type: 'vec3'}
+      },
+      init: function () {
+        console.log("-------------PACKET Component---------------");
+
+        let el = this.el
+        let data = this.data
+
+        // We obtain position Node From
+        var fooComponent = document.querySelector('[connection]').components.connection;
+        console.log('Pos From packet = ' +  fooComponent.data.from);
+
+        let node_from_el = document.getElementById(fooComponent.data.from);
+        let pos1 = node_from_el.getAttribute('position');
+        let pos_from = Object.values(pos1);
+        console.log('Position from = ' + pos_from);
+
+        data.pos_ini.x = pos_from[0];
+        data.pos_ini.y = pos_from[1];
+        data.pos_ini.z = pos_from[2];
+        console.log('Position from = ' , data.pos_ini);
+
+        // We obtain position Node To
+        var fooComponent = document.querySelector('[connection]').components.connection;
+        console.log('Pos To packet = ' +  fooComponent.data.to);
+
+        let node_to_el = document.getElementById(fooComponent.data.to);
+        let pos2 = node_to_el.getAttribute('position');
+        let pos_to = Object.values(pos2);
+        console.log('Position end = ' + pos_to);
+
+        data.pos_end.x = pos_to[0];
+        data.pos_end.y = pos_to[1];
+        data.pos_end.z = pos_to[2];
+        console.log('Position end = ' , data.pos_end);
+
+        el.setAttribute('geometry', {primitive: 'box'});
+        el.setAttribute('material', 'color', data.color);
+        el.setAttribute( 'scale', {x : 0.1 , y : 2 , z : 0.1});
+        el.setAttribute('position', data.pos_ini);
+
+        this.el.addEventListener('click', () => {
+
+          el.setAttribute('animation', {property:'position', to:data.pos_end , dur:data.duration, dir:data.direction});
+        });
+
+      }
+    });
+    </script>
+
+  </head>
+
+  <body>
+    <a-scene background="color: #FAFAFA">
+      <a-camera position="0 5 5"></a-camera>
+      <a-entity environment="preset: starry"></a-entity>
+      <a-entity light="type: ambient; color: #FFF"></a-entity>
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <a-entity id="node1" node="color:green; obj_type:box" position="3 0.5 -6"></a-entity>
+      <a-entity id="node2" node="color:red; obj_type:box" position="-6 0.5 -4"></a-entity>
+      <a-entity id="node3" node="color:yellow; obj_type:box" position="7 0.5 -8"></a-entity>
+
+      <a-entity connection="from: node1; to: node2"></a-entity>
+      <a-entity connection="from: node1; to: node3"></a-entity>
+      <a-entity connection="from: node2; to: node3"></a-entity>
+
+      <a-entity packet="color:blue; duration: 2000; direction: direct"></a-entity>
+      <a-entity packet="color:black; duration: 2000; direction: direct"></a-entity>
+
+    </a-scene>
+  </body>
+</html>
