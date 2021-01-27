@@ -7,6 +7,7 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 
     </script>
     <script>
@@ -30,7 +31,6 @@
       schema: {
         from:{type: 'string'},
         to:{type: 'string'},
-        pos_connection:{type: 'vec3'}
       },
       init: function () {
         console.log("-------------CONNECTION Component---------------");
@@ -44,35 +44,44 @@
         let node_from_el = document.getElementById(node_from);
         let pos1 = node_from_el.getAttribute('position');
         let pos_from = Object.values(pos1);
-        console.log('Position from = ' + pos_from);
+
+        // We pass each component of position FROM to string
+        var fromX = pos_from[0];
+        var fx = fromX.toString();
+
+        var fromY = pos_from[1];
+        var fy = fromY.toString();
+
+        var fromZ = pos_from[2];
+        var fz = fromZ.toString();
+
+        // We concatenate all of them into a single string
+        var coorFrom = fx.concat(' ', fy.concat(' ',fz))
+        console.log('Strings Position from = ' + coorFrom );
 
         // We obtain position Node To
         let node_to_el = document.getElementById(node_to);
         let pos2 = node_to_el.getAttribute('position');
         let pos_to = Object.values(pos2);
-        console.log('Position to = ' + pos_to);
 
-        //We calculate the midpoint of the 2 nodes
-        middle_position = [(pos_from[0]+pos_to[0])/2 , (pos_from[1]+pos_to[1])/2, (pos_from[2]+pos_to[2])/2]
-        console.log('Middle position = ' , middle_position);
+        // We pass each component of position TO to string
+        var toX = pos_to[0];
+        var tx = toX.toString();
 
-        //We calculate the distance between the two nodes to know how long the connection will be
-        connection_length = Math.sqrt(Math.pow(pos_from[0]-pos_to[0], 2) +
-        Math.pow(pos_from[1]-pos_to[1], 2) + Math.pow(pos_from[2]-pos_to[2], 2))
-        console.log('Connection length= ' , connection_length);
+        var toY = pos_to[1];
+        var ty = toY.toString();
 
-        data.pos_connection.x = middle_position[0];
-        data.pos_connection.y = middle_position[1];
-        data.pos_connection.z = middle_position[2];
-        console.log('Position of connection = ' , data.pos_connection);
+        var toZ = pos_to[2];
+        var tz = toZ.toString();
 
-        el.setAttribute('geometry', {primitive: 'cylinder'});
+        // We concatenate all of them into a single string
+        var coorTo = tx.concat(' ', ty.concat(' ',tz))
+        console.log('Strings Position to = ' + coorTo );
+
+        // Draw the connection
+        el.setAttribute('tube', {'path': [coorFrom, coorTo] , 'radius': '0.15' });
         el.setAttribute('material', 'color', 'cyan');
         el.setAttribute('material', 'opacity', '0.15');
-        el.setAttribute('rotation', {x: 90, y: 90, z: 0});
-        el.setAttribute( 'scale', {x : 0.1 , y : connection_length , z : 0.1});
-        el.setAttribute('position', data.pos_connection);
-
       }
     });
 
@@ -148,7 +157,6 @@
 
       <a-entity connection="from: node1; to: node2"></a-entity>
       <a-entity connection="from: node1; to: node3"></a-entity>
-      <a-entity connection="from: node2; to: node3"></a-entity>
 
       <a-entity packet="color:blue; duration: 2000; direction: direct"></a-entity>
       <a-entity packet="color:black; duration: 2000; direction: direct"></a-entity>
