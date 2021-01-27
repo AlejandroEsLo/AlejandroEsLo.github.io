@@ -9,9 +9,106 @@
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
 
     <script>
+
+    AFRAME.registerComponent('net-simulator', {
+      schema: {
+        file: {type: 'string', default: '/cap.json'},
+      },
+      init: function () {
+        console.log('In to the net-simulator Component');
+        let el = this.el
+        let data = this.data
+
+        const request = new XMLHttpRequest();
+        const requestURL = '/http_ejemplo.json';
+
+        request.open('GET', requestURL);
+        request.responseType = 'text';
+        request.send();
+
+        request.onload = function() {
+          const dataTXT = request.response; // We take the response string
+          const data = JSON.parse(dataTXT); // We convert it to an object
+          //console.log(data);
+
+          // Return data as string
+          //console.log(JSON.stringify(data);
+
+          // We get keys from our dictionary
+          let num_keys = Object.keys(data);
+          //console.log(num_keys);
+
+          let num_packets = num_keys.length
+          console.log("Total number of packets = " + num_packets);
+
+          //Array to store all addresses
+          let eth_total = [];
+          let eth_fin = [];
+          let ip_total = [];
+          let ip_fin = [];
+
+          // Function to keep the unique addresses of the arrays
+          Array.prototype.unique=function(a){
+            return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+          });
+
+          // We go through the JSON file to get the addresses
+          for (let i = 0; i < num_packets; i++) {
+
+            for(key in data[i]._source){
+              //console.log(data[i]._source[key]);
+              let acces1 = data[i]._source[key].eth
+              //console.log(acces1);
+              console.log("--------------------Paquete " + i + "------------------------");
+              //Destination Address
+              let eth_dst = Object.values(acces1)[0]
+              console.log("Ethernet Destination Address " + i + " => " + eth_dst);
+              //Source Address
+              let eth_src = Object.values(acces1)[2]
+              console.log("Ethernet Source Address " + i + " => " + eth_src);
+
+              // Añadimos a nuestro array todas las direcciones que vamos encontrando
+              eth_total.push(eth_dst)
+              eth_total.push(eth_src)
+              console.log("Ethernet TOTAL => " + eth_total);
+
+              eth_fin = eth_total.unique();
+              console.log("Ethernet UNICAS => " + eth_fin)
+
+              let num_nodes_eth = eth_fin.length;
+              console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+
+            }
+
+            for(key in data[i]._source){
+              let acces2 = data[i]._source[key].ip
+              //Destination Address
+              let ip_dst = Object.values(acces2)[14]
+              console.log("Ip Address " + i + " => " + ip_dst);
+              //Source Address
+              let ip_src = Object.values(acces2)[13]
+              console.log("Ip Source Address " + i + " => " + ip_src);
+
+              ip_total.push(ip_dst)
+              ip_total.push(ip_src)
+              console.log("IP TOTAL => " + ip_total);
+
+              ip_fin = ip_total.unique();
+              console.log("IP UNICAS => " + ip_fin);;
+
+              let num_nodes_ip = ip_fin.length;
+              console.log("Numero nodos finales IP => " + num_nodes_ip)
+
+            }
+          }
+        }
+
+      }
+    });
+
     AFRAME.registerComponent('node', {
       schema: {
-        obj_type: {type: 'string', default: ''},
+        obj_type: {type: 'string', default: 'box'},
         color: {type: 'color', default: 'blue'}
       },
       init: function () {
@@ -35,9 +132,11 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="node1" node="color:red; geometry:obj_type" position="0 0.5 -12"></a-entity>
-      <a-entity id="node2" node="color:yellow; geometry:obj_type" position="-8 0.5 -4"></a-entity>
-      <a-entity id="node3" node="color:black; geometry:obj_type" position="8 0.5 -4"></a-entity>
+      <a-entity id="node1" node="color:red; obj_type:box" position="0 0.5 -12"></a-entity>
+      <a-entity id="node2" node="color:yellow; obj_type:box" position="-8 0.5 -4"></a-entity>
+      <a-entity id="node3" node="color:black; obj_type:box" position="8 0.5 -4"></a-entity>
+
+      <a-entity id="ReadJSON" net-simulator="file: /http_ejemplo.json"></a-entity>
 
     </a-scene>
   </body>

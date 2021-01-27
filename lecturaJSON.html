@@ -30,6 +30,18 @@
       let num_packets = num_keys.length
       console.log("Total number of packets = " + num_packets);
 
+      //Array to store all addresses
+      let eth_total = [];
+      let eth_fin = [];
+      let ip_total = [];
+      let ip_fin = [];
+
+      // Function to keep the unique addresses of the arrays
+      Array.prototype.unique=function(a){
+        return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+      });
+
+      // We go through the JSON file to get the addresses
       for (let i = 0; i < num_packets; i++) {
 
         for(key in data[i]._source){
@@ -43,6 +55,18 @@
           //Source Address
           let eth_src = Object.values(acces1)[2]
           console.log("Ethernet Source Address " + i + " => " + eth_src);
+
+          // Añadimos a nuestro array todas las direcciones que vamos encontrando
+          eth_total.push(eth_dst)
+          eth_total.push(eth_src)
+          console.log("Ethernet TOTAL => " + eth_total);
+
+          eth_fin = eth_total.unique();
+          console.log("Ethernet UNICAS => " + eth_fin)
+
+          let num_nodes_eth = eth_fin.length;
+          console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+
         }
 
         for(key in data[i]._source){
@@ -53,6 +77,18 @@
           //Source Address
           let ip_src = Object.values(acces2)[13]
           console.log("Ip Source Address " + i + " => " + ip_src);
+
+          ip_total.push(ip_dst)
+          ip_total.push(ip_src)
+          console.log("IP TOTAL => " + ip_total);
+
+          ip_fin = ip_total.unique();
+          console.log("IP UNICAS => " + ip_fin);;
+
+          let num_nodes_ip = ip_fin.length;
+          console.log("Numero nodos finales IP => " + num_nodes_ip)
+
+
         }
       }
     }
