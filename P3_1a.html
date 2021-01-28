@@ -56,10 +56,11 @@
           for (let i = 0; i < num_packets; i++) {
 
             for(key in data[i]._source){
-              //console.log(data[i]._source[key]);
-              let acces1 = data[i]._source[key].eth
-              //console.log(acces1);
+
               console.log("--------------------Paquete " + i + "------------------------");
+
+              //----------<<<<< Ethernet Address >>>>>----------
+              let acces1 = data[i]._source[key].eth
               //Destination Address
               let eth_dst = Object.values(acces1)[0]
               console.log("Ethernet Destination Address " + i + " => " + eth_dst);
@@ -78,9 +79,7 @@
               let num_nodes_eth = eth_fin.length;
               console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
 
-            }
-
-            for(key in data[i]._source){
+              //----------<<<<< IP Address >>>>>----------
               let acces2 = data[i]._source[key].ip
               //Destination Address
               let ip_dst = Object.values(acces2)[14]
@@ -99,8 +98,13 @@
               let num_nodes_ip = ip_fin.length;
               console.log("Numero nodos finales IP => " + num_nodes_ip)
 
+              //---------- <<<<<TIME RELATIVE >>>>>----------
+              let acces3 = data[i]._source[key].frame
+              let time_relative = Object.values(acces3)[6]
+              console.log("Time relative " + i + " => " + time_relative);
             }
           }
+
         }
 
       }
