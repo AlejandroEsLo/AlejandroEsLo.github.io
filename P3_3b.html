@@ -91,8 +91,6 @@
         duration: {type: 'number', default: '3000'},
         start: {type: 'number'},
         color: {type: 'color', default: 'black'},
-        from:{type: 'string'},
-        to:{type: 'string'},
         pos_ini:{type: 'vec3'},
         pos_end:{type: 'vec3'}
       },
@@ -101,11 +99,12 @@
 
         let el = this.el
         let data = this.data
-        let node_from = data.from
-        let node_to = data.to
 
         // We obtain position Node From
-        let node_from_el = document.getElementById(node_from);
+        var fooComponent = document.querySelector('[connection]').components.connection;
+        console.log('Pos From packet = ' +  fooComponent.data.from);
+
+        let node_from_el = document.getElementById(fooComponent.data.from);
         let pos1 = node_from_el.getAttribute('position');
         let pos_from = Object.values(pos1);
         console.log('Position from = ' + pos_from);
@@ -116,10 +115,13 @@
         console.log('Position from = ' , data.pos_ini);
 
         // We obtain position Node To
-        let node_to_el = document.getElementById(node_to);
+        var fooComponent = document.querySelector('[connection]').components.connection;
+        console.log('Pos To packet = ' +  fooComponent.data.to);
+
+        let node_to_el = document.getElementById(fooComponent.data.to);
         let pos2 = node_to_el.getAttribute('position');
         let pos_to = Object.values(pos2);
-        console.log('Position to = ' + pos_to);
+        console.log('Position end = ' + pos_to);
 
         data.pos_end.x = pos_to[0];
         data.pos_end.y = pos_to[1];
@@ -130,7 +132,11 @@
         el.setAttribute('material', 'color', data.color);
         el.setAttribute( 'scale', {x : 0.1 , y : 2 , z : 0.1});
         el.setAttribute('position', data.pos_ini);
-        el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start, dur:data.duration});
+
+        this.el.addEventListener('click', () => {
+
+          el.setAttribute('animation', {property:'position', to:data.pos_end , dur:data.duration, dir:data.direction});
+        });
 
       }
     });
@@ -148,25 +154,12 @@
       <a-entity id="node1" node="color:green; obj_type:box" position="3 0.5 -6"></a-entity>
       <a-entity id="node2" node="color:red; obj_type:box" position="-6 0.5 -4"></a-entity>
       <a-entity id="node3" node="color:yellow; obj_type:box" position="7 0.5 -8"></a-entity>
-      <a-entity id="node4" node="color:green; obj_type:box" position="3 0.5 -15"></a-entity>
-      <a-entity id="node5" node="color:red; obj_type:box" position="-6 0.5 -12"></a-entity>
-      <a-entity id="node6" node="color:yellow; obj_type:box" position="7 0.5 -18"></a-entity>
 
       <a-entity connection="from: node1; to: node2"></a-entity>
       <a-entity connection="from: node1; to: node3"></a-entity>
-      <a-entity connection="from: node1; to: node4"></a-entity>
-      <a-entity connection="from: node1; to: node5"></a-entity>
-      <a-entity connection="from: node1; to: node6"></a-entity>
-      <a-entity connection="from: node2; to: node5"></a-entity>
-      <a-entity connection="from: node5; to: node4"></a-entity>
 
-      <a-entity packet="color:blue; duration: 2000; from: node1; to: node3; start: 3000"></a-entity>
-      <a-entity packet="color:black; duration: 4000; from: node2; to: node1; start: 6000"></a-entity>
-      <a-entity packet="color:red; duration: 4000; from: node4; to: node1; start: 9000"></a-entity>
-      <a-entity packet="color:white; duration: 4000; from: node5; to: node1; start: 12000"></a-entity>
-      <a-entity packet="color:green; duration: 4000; from: node6; to: node1; start: 15000"></a-entity>
-      <a-entity packet="color:purple; duration: 4000; from: node2; to: node5; start: 18000"></a-entity>
-      <a-entity packet="color:orange; duration: 4000; from: node5; to: node4; start: 21000"></a-entity>
+      <a-entity packet="color:blue; duration: 2000; from: node1; to: node2; start: 5000"></a-entity>
+      <a-entity packet="color:black; duration: 4000; from: node2; to: node3; start: 8000"></a-entity>
 
     </a-scene>
   </body>
