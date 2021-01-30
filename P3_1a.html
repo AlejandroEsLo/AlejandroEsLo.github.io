@@ -10,9 +10,28 @@
 
     <script>
 
+    AFRAME.registerComponent('node', {
+      schema: {
+        obj_type: {type: 'string', default: 'box'},
+        color: {type: 'color', default: 'blue'},
+        position: {type: 'vec3'},
+        id: {type: 'string'}
+      },
+      init: function () {
+        console.log('In to the NODE Component');
+        let el = this.el
+        let data = this.data
+        el.setAttribute('geometry', {primitive: data.obj_type});
+        el.setAttribute('material', 'color', data.color);
+        el.setAttribute('position', data.position);
+        el.setAttribute('id', data.id);
+      }
+    });
+
     AFRAME.registerComponent('net-simulator', {
       schema: {
-        file: {type: 'string', default: '/cap.json'},
+        file: {type: 'string', default: ''},
+        line: {type: 'string', default: ''}
       },
       init: function () {
         console.log('In to the net-simulator Component');
@@ -20,7 +39,7 @@
         let data = this.data
 
         const request = new XMLHttpRequest();
-        const requestURL = '/http_ejemplo.json';
+        const requestURL = data.file;
 
         request.open('GET', requestURL);
         request.responseType = 'text';
@@ -29,15 +48,9 @@
         request.onload = function() {
           const dataTXT = request.response; // We take the response string
           const data = JSON.parse(dataTXT); // We convert it to an object
-          //console.log(data);
 
-          // Return data as string
-          //console.log(JSON.stringify(data);
 
-          // We get keys from our dictionary
-          let num_keys = Object.keys(data);
-          //console.log(num_keys);
-
+          let num_keys = Object.keys(data); // We get keys from our dictionary
           let num_packets = num_keys.length
           console.log("Total number of packets = " + num_packets);
 
@@ -105,24 +118,49 @@
             }
           }
 
+          // Create a NODES
+          var nodes = {}
+          nodes = ip_fin // case to IP Address
+          console.log("NODES " + nodes);
+          var node_pos = '-5 2 -10' // Position initial for the first node
+
+          for (let i = 0; i < nodes.length; i++) {
+
+            var generarColor = () => "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16))
+
+            var entity = document.createElement('a-entity');
+            var scene = document.querySelector('a-scene');
+            entity.setAttribute('node','position',node_pos);
+            entity.setAttribute('node','obj_type','box');
+            entity.setAttribute('node','color',generarColor());
+            entity.setAttribute('node','id',nodes[i]);
+
+            // Change the position X
+            var change_pos = []
+            change_pos = node_pos.split(" ")
+            var pos_x = parseInt(change_pos[0])
+            pos_x += 5
+
+            // We pass each component of position to string
+            var coorX = pos_x;
+            var cx = coorX.toString();
+
+            var coorY = change_pos[1];
+            var cy = coorY.toString();
+
+            var coorZ = change_pos[2];
+            var cz = coorZ.toString();
+
+            // We concatenate all of them into a single string
+            var node_pos = cx.concat(' ', cy.concat(' ',cz))
+            console.log('NODE Position = ' + node_pos );
+
+            // Add to the scene
+            scene.appendChild(entity);
+          }
+
         }
 
-      }
-    });
-
-    AFRAME.registerComponent('node', {
-      schema: {
-        obj_type: {type: 'string', default: 'box'},
-        color: {type: 'color', default: 'blue'}
-      },
-      init: function () {
-        console.log('In to the NODE Component');
-        let el = this.el
-        let data = this.data
-        //let geo = Object.values(data.obj_type)
-        //console.log('Value to data.geometry = ' , data.obj_type);
-        el.setAttribute('geometry', {primitive: data.obj_type});
-        el.setAttribute('material', 'color', data.color);
       }
     });
     </script>
@@ -136,11 +174,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="node1" node="color:red; obj_type:box" position="0 0.5 -12"></a-entity>
-      <a-entity id="node2" node="color:yellow; obj_type:box" position="-8 0.5 -4"></a-entity>
-      <a-entity id="node3" node="color:black; obj_type:box" position="8 0.5 -4"></a-entity>
-
-      <a-entity id="ReadJSON" net-simulator="file: /http_ejemplo.json"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: /http_ejemplo.json; layout:line"></a-entity>
 
     </a-scene>
   </body>
