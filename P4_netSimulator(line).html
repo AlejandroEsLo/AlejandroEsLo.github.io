@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Demo1 Component NODE</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+
+    <script>
+
+    AFRAME.registerComponent('node', {
+      schema: {
+        obj_type: {type: 'string', default: 'box'},
+        color: {type: 'color', default: 'blue'},
+        position: {type: 'vec3'},
+        id: {type: 'string'}
+      },
+      init: function () {
+        console.log('In to the NODE Component');
+        let el = this.el
+        let data = this.data
+        el.setAttribute('geometry', {primitive: data.obj_type});
+        el.setAttribute('material', 'color', data.color);
+        el.setAttribute('position', data.position);
+        el.setAttribute('id', data.id);
+      }
+    });
+
+    AFRAME.registerComponent('net-simulator', {
+      schema: {
+        file: {type: 'string', default: ''},
+        line: {type: 'string', default: ''}
+      },
+      init: function () {
+        console.log('In to the net-simulator Component');
+        let el = this.el
+        let data = this.data
+
+        const request = new XMLHttpRequest();
+        const requestURL = data.file;
+
+        request.open('GET', requestURL);
+        request.responseType = 'text';
+        request.send();
+
+        request.onload = function() {
+          const dataTXT = request.response; // We take the response string
+          const data = JSON.parse(dataTXT); // We convert it to an object
+
+
+          let num_keys = Object.keys(data); // We get keys from our dictionary
+          let num_packets = num_keys.length
+          console.log("Total number of packets = " + num_packets);
+
+          //Array to store all addresses
+          let eth_total = [];
+          let eth_fin = [];
+          let ip_total = [];
+          let ip_fin = [];
+
+          // Function to keep the unique addresses of the arrays
+          Array.prototype.unique=function(a){
+            return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+          });
+
+          // We go through the JSON file to get the addresses
+          for (let i = 0; i < num_packets; i++) {
+
+            for(key in data[i]._source){
+
+              console.log("--------------------Paquete " + i + "------------------------");
+
+              //----------<<<<< Ethernet Address >>>>>----------
+              let acces1 = data[i]._source[key].eth
+              //Destination Address
+              let eth_dst = Object.values(acces1)[0]
+              console.log("Ethernet Destination Address " + i + " => " + eth_dst);
+              //Source Address
+              let eth_src = Object.values(acces1)[2]
+              console.log("Ethernet Source Address " + i + " => " + eth_src);
+
+              // Añadimos a nuestro array todas las direcciones que vamos encontrando
+              eth_total.push(eth_dst)
+              eth_total.push(eth_src)
+              console.log("Ethernet TOTAL => " + eth_total);
+
+              eth_fin = eth_total.unique();
+              console.log("Ethernet UNICAS => " + eth_fin)
+
+              let num_nodes_eth = eth_fin.length;
+              console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+
+              //----------<<<<< IP Address >>>>>----------
+              let acces2 = data[i]._source[key].ip
+              //Destination Address
+              let ip_dst = Object.values(acces2)[14]
+              console.log("Ip Address " + i + " => " + ip_dst);
+              //Source Address
+              let ip_src = Object.values(acces2)[13]
+              console.log("Ip Source Address " + i + " => " + ip_src);
+
+              ip_total.push(ip_dst)
+              ip_total.push(ip_src)
+              console.log("IP TOTAL => " + ip_total);
+
+              ip_fin = ip_total.unique();
+              console.log("IP UNICAS => " + ip_fin);;
+
+              let num_nodes_ip = ip_fin.length;
+              console.log("Numero nodos finales IP => " + num_nodes_ip)
+
+              //---------- <<<<<TIME RELATIVE >>>>>----------
+              let acces3 = data[i]._source[key].frame
+              let time_relative = Object.values(acces3)[6]
+              console.log("Time relative " + i + " => " + time_relative);
+            }
+          }
+
+          // Create a NODES
+          var nodes = {}
+          nodes = ip_fin // case to IP Address
+          console.log("NODES " + nodes);
+          var node_pos = '-5 0.5 -10' // Position initial for the first node
+
+          for (let i = 0; i < nodes.length; i++) {
+
+            var generarColor = () => "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16))
+
+            var entity = document.createElement('a-entity');
+            var scene = document.querySelector('a-scene');
+            entity.setAttribute('node','position',node_pos);
+            entity.setAttribute('node','obj_type','box');
+            entity.setAttribute('node','color',generarColor());
+            entity.setAttribute('node','id',nodes[i]);
+
+            // Change the position X
+            var change_pos = []
+            change_pos = node_pos.split(" ")
+            var pos_x = parseInt(change_pos[0])
+            pos_x += 5
+
+            // We pass each component of position to string
+            var coorX = pos_x;
+            var cx = coorX.toString();
+
+            var coorY = change_pos[1];
+            var cy = coorY.toString();
+
+            var coorZ = change_pos[2];
+            var cz = coorZ.toString();
+
+            // We concatenate all of them into a single string
+            var node_pos = cx.concat(' ', cy.concat(' ',cz))
+            console.log('NODE Position = ' + node_pos );
+
+            // Add to the scene
+            scene.appendChild(entity);
+          }
+
+        }
+
+      }
+    });
+    </script>
+
+  </head>
+
+  <body>
+    <a-scene background="color: #FAFAFA">
+      <a-camera position="0 5 5"></a-camera>
+      <a-entity environment="preset: starry"></a-entity>
+      <a-entity light="type: ambient; color: #FFF"></a-entity>
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <a-entity id="ReadJSON" net-simulator="file: /http_ejemplo.json; layout:line"></a-entity>
+
+    </a-scene>
+  </body>
+</html>
