@@ -74,17 +74,17 @@
 
               //----------<<<<< Ethernet Address >>>>>----------
               let acces1 = data[i]._source[key].eth
-              //Destination Address
-              let eth_dst = Object.values(acces1)[0]
-              console.log("Ethernet Destination Address " + i + " => " + eth_dst);
-              //Source Address
-              let eth_src = Object.values(acces1)[2]
-              console.log("Ethernet Source Address " + i + " => " + eth_src);
+
+              let eth_dst = Object.values(acces1)[0]//Destination Address
+              //console.log("Ethernet Destination Address " + i + " => " + eth_dst);
+
+              let eth_src = Object.values(acces1)[2]//Source Address
+              //console.log("Ethernet Source Address " + i + " => " + eth_src);
 
               // Añadimos a nuestro array todas las direcciones que vamos encontrando
               eth_total.push(eth_dst)
               eth_total.push(eth_src)
-              console.log("Ethernet TOTAL => " + eth_total);
+              //console.log("Ethernet TOTAL => " + eth_total);
 
               eth_fin = eth_total.unique();
               console.log("Ethernet UNICAS => " + eth_fin)
@@ -94,22 +94,24 @@
 
               //----------<<<<< IP Address >>>>>----------
               let acces2 = data[i]._source[key].ip
-              //Destination Address
-              let ip_dst = Object.values(acces2)[14]
-              console.log("Ip Address " + i + " => " + ip_dst);
-              //Source Address
-              let ip_src = Object.values(acces2)[13]
-              console.log("Ip Source Address " + i + " => " + ip_src);
+              if (acces2 != undefined || acces2 != null) {
+                //Destination Address
+                let ip_dst = Object.values(acces2)[14]//Destination Address
+                //console.log("Ip Address " + i + " => " + ip_dst);
 
-              ip_total.push(ip_dst)
-              ip_total.push(ip_src)
-              console.log("IP TOTAL => " + ip_total);
+                let ip_src = Object.values(acces2)[13]//Source Address
+                //console.log("Ip Source Address " + i + " => " + ip_src);
 
-              ip_fin = ip_total.unique();
-              console.log("IP UNICAS => " + ip_fin);;
+                ip_total.push(ip_dst)
+                ip_total.push(ip_src)
+                //console.log("IP TOTAL => " + ip_total);
 
-              let num_nodes_ip = ip_fin.length;
-              console.log("Numero nodos finales IP => " + num_nodes_ip)
+                ip_fin = ip_total.unique();
+                console.log("IP UNICAS => " + ip_fin);;
+
+                let num_nodes_ip = ip_fin.length;
+                console.log("Numero nodos finales IP => " + num_nodes_ip)
+              }
 
               //---------- <<<<<TIME RELATIVE >>>>>----------
               let acces3 = data[i]._source[key].frame
@@ -174,7 +176,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: /http_ejemplo.json; layout:line"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: /ejemplo3.json; layout:line"></a-entity>
 
     </a-scene>
   </body>
