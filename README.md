@@ -26,3 +26,10 @@ https://alejandroeslo.github.io/TFG/P3_2b.html
 
 Escena 3_3(Componente Packet):
 https://alejandroeslo.github.io/TFG/P3_3a.html
+
+Escena 4(Componente Net Simulator):
+Linear:
+https://alejandroeslo.github.io/TFG/P4_netSimulator(line).html
+
+Circular:
+https://alejandroeslo.github.io/TFG/P4_netSimulator(circle).html
