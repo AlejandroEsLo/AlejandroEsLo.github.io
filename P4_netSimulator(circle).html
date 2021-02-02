@@ -7,6 +7,8 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
 
     <script>
 
@@ -28,15 +30,76 @@
       }
     });
 
+    AFRAME.registerComponent('connection', {
+      schema: {
+        from:{type: 'string'},
+        to:{type: 'string'},
+      },
+      init: function () {
+        console.log("-------------CONNECTION Component---------------");
+
+        let el = this.el
+        let data = this.data
+        let node_from = data.from
+        let node_to = data.to
+
+        // We obtain position Node From
+        let node_from_el = document.getElementById(node_from);
+        let pos1 = node_from_el.getAttribute('position');
+        let pos_from = Object.values(pos1);
+
+        // We pass each component of position FROM to string
+        var fromX = pos_from[0];
+        var fx = fromX.toString();
+
+        var fromY = pos_from[1];
+        var fy = fromY.toString();
+
+        var fromZ = pos_from[2];
+        var fz = fromZ.toString();
+
+        // We concatenate all of them into a single string
+        var coorFrom = fx.concat(' ', fy.concat(' ',fz))
+        console.log('Strings Position from = ' + coorFrom );
+
+        // We obtain position Node To
+        let node_to_el = document.getElementById(node_to);
+        let pos2 = node_to_el.getAttribute('position');
+        let pos_to = Object.values(pos2);
+
+        // We pass each component of position TO to string
+        var toX = pos_to[0];
+        var tx = toX.toString();
+
+        var toY = pos_to[1];
+        var ty = toY.toString();
+
+        var toZ = pos_to[2];
+        var tz = toZ.toString();
+
+        // We concatenate all of them into a single string
+        var coorTo = tx.concat(' ', ty.concat(' ',tz))
+        console.log('Strings Position to = ' + coorTo );
+
+        // Draw the connection
+        el.setAttribute('tube', {'path': [coorFrom, coorTo] , 'radius': '0.15' });
+        el.setAttribute('material', 'color', 'cyan');
+        el.setAttribute('material', 'opacity', '0.15');
+      }
+    });
+
     AFRAME.registerComponent('net-simulator', {
       schema: {
-        file: {type: 'string', default: ''},
-        line: {type: 'string', default: ''}
+        file: {type: 'string'},
+        layout: {type: 'string',default: 'circle'},
+        proto: {type: 'string',default: 'eth'}, //eth or ip
       },
+
       init: function () {
         console.log('In to the net-simulator Component');
         let el = this.el
         let data = this.data
+        let proto = data.proto
 
         const request = new XMLHttpRequest();
         const requestURL = data.file;
@@ -122,11 +185,21 @@
           }
 
           // Create a NODES
+
+          var scene = document.querySelector('a-scene');
           var nodes = {}
-          nodes = ip_fin // case to IP Address
+          var nodesP = []// ARRAY [nodo, coordenada]
+
+          // Depende de si queremos analizar capa ETHERNET o IP
+          if (proto == "ip") {
+            nodes = ip_fin // case to IP Address
+          }else {
+            nodes = eth_fin
+          }
+
           console.log("NODES " + nodes);
           var node_pos = '0 0.5 0' // Position initial for the first node
-
+          //var node_pos2 = '0,0.5,0'
           var increase = Math.PI * 2 / nodes.length ;
           angle = 0
 
@@ -136,7 +209,6 @@
             var generarColor = () => "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16))
 
             var entity = document.createElement('a-entity');
-            var scene = document.querySelector('a-scene');
 
             entity.setAttribute('node','obj_type','box');
             entity.setAttribute('node','color',generarColor());
@@ -144,7 +216,11 @@
 
             // Calcular las coordenadas X y Z para formar un circulo
             var change_pos = []
+            var connect_pos = []
             change_pos = node_pos.split(" ")
+            //connect_pos = node_pos2.split(",")
+
+            console.log('PROBANDO POSICIONES = ' + connect_pos);
             // Change the position X
             var pos_x = parseInt(change_pos[0])
             pos_x = nodes.length*Math.cos(angle);
@@ -165,7 +241,7 @@
 
             // We concatenate all of them into a single string
             var node_pos = cx.concat(' ', cy.concat(' ',cz))
-
+            //var node_pos2 = cx.concat(',', cy.concat(',',cz))
             //Incrementamos el angulo
             angle += increase;
             console.log('angulo = ' + angle);
@@ -174,8 +250,40 @@
             entity.setAttribute('node','position',node_pos);
             console.log('NODE Position = ' + node_pos);
 
+            // Añadimos cada coordenada a su nodo
+            nodesP.push(nodes[i])
+            //nodesP.push(node_pos)
+
             // Add to the scene
             scene.appendChild(entity);
+          }
+
+          // Create CONNECTION
+          var connection = {}
+          var f = 0;// variable para variable FROM del bucle
+          var t = 0;// variable para variable TO del bucle
+          connection = nodes // case to IP Address
+          console.log("CONNECTION " + connection);
+
+          for (let i = 0; i < nodes.length; i++) {
+
+            var entity2 = document.createElement('a-entity');
+
+            if (i == nodes.length-1) {//Si es el ultimo elemento, se unira con el priemro de la lista
+              f = nodesP[i]
+              t = nodesP[0]
+              entity2.setAttribute('connection','from',f);
+              entity2.setAttribute('connection','to',t);
+              console.log('NODE CONNECTION Position <<<<IF>>>= ' + nodesP);
+            }else {
+              f = nodesP[i]
+              t = nodesP[i+1]
+              entity2.setAttribute('connection','from',f);
+              entity2.setAttribute('connection','to',t);
+              console.log('NODE CONNECTION Position <<<<ELSE>>>= ' + nodesP);
+            }
+            // Add to the scene
+            scene.appendChild(entity2);
           }
 
         }
@@ -193,7 +301,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: /ejemplo3.json; layout:line"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: /http_ejemplo.json; layout: line; proto: ip"></a-entity>
 
     </a-scene>
   </body>
