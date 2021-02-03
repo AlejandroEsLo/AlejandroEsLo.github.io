@@ -122,6 +122,10 @@
           let eth_fin = [];
           let ip_total = [];
           let ip_fin = [];
+          var connections = {};
+          var connections_eth = {};
+          var connections_ip = {};
+
 
           // Function to keep the unique addresses of the arrays
           Array.prototype.unique=function(a){
@@ -144,7 +148,7 @@
               let eth_src = Object.values(acces1)[2]//Source Address
               //console.log("Ethernet Source Address " + i + " => " + eth_src);
 
-              // Añadimos a nuestro array todas las direcciones que vamos encontrando
+              // We add to our array all the addresses that we are finding
               eth_total.push(eth_dst)
               eth_total.push(eth_src)
               //console.log("Ethernet TOTAL => " + eth_total);
@@ -154,6 +158,17 @@
 
               let num_nodes_eth = eth_fin.length;
               console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+
+              // We create a list of connections with activity
+              var comparison = [eth_src,eth_dst];
+              var order = comparison.sort(); // we order alphabetically
+              var first_dir = order[0];
+              var second_dir = order[1];
+
+              connections_eth[first_dir+ '-' + second_dir] = {from: eth_src, to: eth_dst}
+
+              console.log("<<<<<<<<<CONNECTIONS>>>>>>>> "+ i + " => " + JSON.stringify(connections_eth))
+              console.log("objetos %O:",connections_eth)
 
               //----------<<<<< IP Address >>>>>----------
               let acces2 = data[i]._source[key].ip
@@ -175,6 +190,19 @@
 
                 let num_nodes_ip = ip_fin.length;
                 console.log("Numero nodos finales IP => " + num_nodes_ip)
+
+
+                // We create a list of connections with activity
+                var comparison = [ip_src,ip_dst];
+                var order = comparison.sort(); // we order alphabetically
+                var first_dir = order[0];
+                var second_dir = order[1];
+
+                connections_ip[first_dir+ '-' + second_dir] = {from: ip_src, to: ip_dst}
+
+                console.log("<<<<<<<<<CONNECTIONS>>>>>>>> "+ i + " => " + JSON.stringify(connections_ip))
+                console.log("objetos %O:",connections_ip)
+
               }
 
               //---------- <<<<<TIME RELATIVE >>>>>----------
@@ -259,29 +287,29 @@
           }
 
           // Create CONNECTION
-          var connection = {}
-          var f = 0;// variable para variable FROM del bucle
-          var t = 0;// variable para variable TO del bucle
-          connection = nodes // case to IP Address
-          console.log("CONNECTION " + connection);
 
-          for (let i = 0; i < nodes.length; i++) {
+          console.log("<<<<<<<CONNECTION>>>>>>>>> ");
+          // Depende de si queremos analizar capa ETHERNET o IP
+          if (proto == "ip") {
+            connections = connections_ip // case to IP Address
+          }else {
+            connections = connections_eth
+          }
+
+          for (let i = 0; i < Object.keys(connections).length; i++) {
 
             var entity2 = document.createElement('a-entity');
 
-            if (i == nodes.length-1) {//Si es el ultimo elemento, se unira con el priemro de la lista
-              f = nodesP[i]
-              t = nodesP[0]
-              entity2.setAttribute('connection','from',f);
-              entity2.setAttribute('connection','to',t);
-              console.log('NODE CONNECTION Position <<<<IF>>>= ' + nodesP);
-            }else {
-              f = nodesP[i]
-              t = nodesP[i+1]
-              entity2.setAttribute('connection','from',f);
-              entity2.setAttribute('connection','to',t);
-              console.log('NODE CONNECTION Position <<<<ELSE>>>= ' + nodesP);
-            }
+            var key_connections = Object.keys(connections)
+            console.log("Key => " + key_connections)
+
+            var prop = connections[key_connections[i]];
+            // Para obtener el valor del las propiedad from y to
+            console.log("Direccion From => " + prop.from)
+            console.log("Direccion To => " + prop.to)
+
+            entity2.setAttribute('connection','from',prop.from);
+            entity2.setAttribute('connection','to',prop.to);
             // Add to the scene
             scene.appendChild(entity2);
           }
@@ -301,7 +329,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: ejemplo3.json; layout: line; proto: ip"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: ejemplo3.json; layout: line; proto: eth"></a-entity>
 
     </a-scene>
   </body>
