@@ -36,6 +36,7 @@
       let ip_total = [];
       let ip_fin = [];
       var all_packet =[]; //Array de objetos{numero paquete,eth_dst,eth,src}
+      var connections={}
 
       // Function to keep the unique addresses of the arrays
       Array.prototype.unique=function(a){
@@ -97,30 +98,65 @@
           console.log("objetos %O:",all_packet)
           //----------------------------------------------------------
 
+          var comparacion = [eth_src,eth_dst];
+          var orden = comparacion.sort(); // ordenamos alfabeticamente
+          var first_dir = orden[0];
+          var second_dir = orden[1];
+
+          console.log("<<<<<<<<<COMPARACION>>>>>>>> "+ i + " => " + comparacion)
+          console.log("<<<<<<<<<ORDEN>>>>>>>> "+ i + " => " + orden)
+
+          connections[first_dir+ '-' + second_dir] = {from: eth_src, to: eth_dst}
+
+          console.log("<<<<<<<<<CONNECTIONS>>>>>>>> "+ i + " => " + JSON.stringify(connections))
+          console.log("objetos %O:",connections)
+
+          var elementos = Object.keys(connections).length
+          console.log("Longitud => " + elementos)
+
+          var key_connections = Object.keys(connections)
+          console.log("Key => " + key_connections)
+
+          var prop = connections[key_connections[i]];
+          // Para obtener el valor del las propiedad from y to
+          console.log("Direccion From => " + prop.from)
+          console.log("Direccion To => " + prop.to)
+          //{"dirA-dirB": {"from": "dirA", "to": "dirB"},
+          //"dirC-dirD": {"from": "dirC", "to": "dirD"},
+          //"dirC-dirE": {"from": "dirC", "to": "dirE"}
+
+
+
+          //-----------------------------------------------------
+
+
 
           //----------<<<<< IP Address >>>>>----------
           let acces2 = data[i]._source[key].ip
-          //Destination Address
-          let ip_dst = Object.values(acces2)[14]
-          console.log("Ip Address " + i + " => " + ip_dst);
-          //Source Address
-          let ip_src = Object.values(acces2)[13]
-          console.log("Ip Source Address " + i + " => " + ip_src);
 
-          ip_total.push(ip_dst)
-          ip_total.push(ip_src)
-          console.log("IP TOTAL => " + ip_total);
+          if (acces2 != undefined || acces2 != null) {
+            //Destination Address
+            let ip_dst = Object.values(acces2)[14]
+            console.log("Ip Address " + i + " => " + ip_dst);
+            //Source Address
+            let ip_src = Object.values(acces2)[13]
+            console.log("Ip Source Address " + i + " => " + ip_src);
 
-          ip_fin = ip_total.unique();
-          console.log("IP UNICAS => " + ip_fin);;
+            ip_total.push(ip_dst)
+            ip_total.push(ip_src)
+            console.log("IP TOTAL => " + ip_total);
 
-          let num_nodes_ip = ip_fin.length;
-          console.log("Numero nodos finales IP => " + num_nodes_ip)
+            ip_fin = ip_total.unique();
+            console.log("IP UNICAS => " + ip_fin);;
 
-          //---------- <<<<<TIME RELATIVE >>>>>----------
-          let acces3 = data[i]._source[key].frame
-          let time_relative = Object.values(acces3)[6]
-          console.log("Time relative " + i + " => " + time_relative);
+            let num_nodes_ip = ip_fin.length;
+            console.log("Numero nodos finales IP => " + num_nodes_ip)
+
+            //---------- <<<<<TIME RELATIVE >>>>>----------
+            let acces3 = data[i]._source[key].frame
+            let time_relative = Object.values(acces3)[6]
+            console.log("Time relative " + i + " => " + time_relative);
+          }
         }
       }
     }
