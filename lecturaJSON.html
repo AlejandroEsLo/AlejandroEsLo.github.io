@@ -35,6 +35,7 @@
       let eth_fin = [];
       let ip_total = [];
       let ip_fin = [];
+      var all_packet =[]; //Array de objetos{numero paquete,eth_dst,eth,src}
 
       // Function to keep the unique addresses of the arrays
       Array.prototype.unique=function(a){
@@ -67,6 +68,35 @@
 
           let num_nodes_eth = eth_fin.length;
           console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+
+
+
+          // -----------------------PROBANDO------------------------
+          var packet_list = {packet: {numero: i, eth_dst: eth_dst, eth_src:eth_src}};
+
+          console.log("Lista de paquetes => " + JSON.stringify(packet_list));
+          all_packet.push(packet_list)
+          console.log("Todos los paquetes => " + all_packet)
+
+          // Prueba para datos del primer elemento del array
+          // primer elemento array
+          var p1 = Object.values(all_packet[i].packet)
+          console.log("Primer elemento del array => " + p1)
+          // numero de paquetes
+          var pn = p1[0]
+          console.log("Numero de paquete "+ i + " => " + pn)
+          // direccion eth_destino
+          var p_dst = p1[1]
+          console.log("Direccion eth DESTINO "+ i + " => " + p_dst)
+          //direccion eth_origen
+          var p_src = p1[2]
+          console.log("Direccion eth ORIGEN "+ i + " => " + p_src)
+
+          //console.log("Elemento seleccionado => " + Object.values(all_packet[0].packet)[2])
+          console.log("objetos %O:",packet_list)
+          console.log("objetos %O:",all_packet)
+          //----------------------------------------------------------
+
 
           //----------<<<<< IP Address >>>>>----------
           let acces2 = data[i]._source[key].ip
