@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Demo1 Component NODE</title>
+    <title>NET SIMULATOR</title>
     <meta name="description" content="Start">
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
@@ -20,7 +20,7 @@
         id: {type: 'string'}
       },
       init: function () {
-        console.log('In to the NODE Component');
+        //console.log('In to the NODE Component');
         let el = this.el
         let data = this.data
         el.setAttribute('geometry', {primitive: data.obj_type});
@@ -36,7 +36,7 @@
         to:{type: 'string'},
       },
       init: function () {
-        console.log("-------------CONNECTION Component---------------");
+        //console.log("-------------CONNECTION Component---------------");
 
         let el = this.el
         let data = this.data
@@ -60,7 +60,7 @@
 
         // We concatenate all of them into a single string
         var coorFrom = fx.concat(' ', fy.concat(' ',fz))
-        console.log('Strings Position from = ' + coorFrom );
+        //console.log('Strings Position from = ' + coorFrom );
 
         // We obtain position Node To
         let node_to_el = document.getElementById(node_to);
@@ -79,7 +79,7 @@
 
         // We concatenate all of them into a single string
         var coorTo = tx.concat(' ', ty.concat(' ',tz))
-        console.log('Strings Position to = ' + coorTo );
+        //console.log('Strings Position to = ' + coorTo );
 
         // Draw the connection
         el.setAttribute('tube', {'path': [coorFrom, coorTo] , 'radius': '0.15' });
@@ -167,8 +167,8 @@
 
               connections_eth[first_dir+ '-' + second_dir] = {from: eth_src, to: eth_dst}
 
-              console.log("<<<<<<<<<CONNECTIONS>>>>>>>> "+ i + " => " + JSON.stringify(connections_eth))
-              console.log("objetos %O:",connections_eth)
+              //console.log("<<<<<<<<<CONNECTIONS>>>>>>>> "+ i + " => " + JSON.stringify(connections_eth))
+              //console.log("objetos %O:",connections_eth)
 
               //----------<<<<< IP Address >>>>>----------
               let acces2 = data[i]._source[key].ip
@@ -176,7 +176,7 @@
               if (acces2 != undefined || acces2 != null) {
                 //Destination Address
                 let ip_dst = Object.values(acces2)[14]//Destination Address
-                //console.log("Ip Address " + i + " => " + ip_dst);
+                //console.log("Ip Address Destination " + i + " => " + ip_dst);
 
                 let ip_src = Object.values(acces2)[13]//Source Address
                 //console.log("Ip Source Address " + i + " => " + ip_src);
@@ -199,21 +199,17 @@
                 var second_dir = order[1];
 
                 connections_ip[first_dir+ '-' + second_dir] = {from: ip_src, to: ip_dst}
-
-                console.log("<<<<<<<<<CONNECTIONS>>>>>>>> "+ i + " => " + JSON.stringify(connections_ip))
-                console.log("objetos %O:",connections_ip)
-
               }
 
               //---------- <<<<<TIME RELATIVE >>>>>----------
               let acces3 = data[i]._source[key].frame
               let time_relative = Object.values(acces3)[6]
-              console.log("Time relative " + i + " => " + time_relative);
+              //console.log("Time relative " + i + " => " + time_relative);
             }
           }
 
           // Create a NODES
-
+          //console.log("<<<<<<<NODES>>>>>>>>> ");
           var scene = document.querySelector('a-scene');
           var nodes = {}
           var nodesP = []// ARRAY [nodo, coordenada]
@@ -225,7 +221,7 @@
             nodes = eth_fin
           }
 
-          console.log("NODES " + nodes);
+          //console.log("NODES " + nodes);
           var node_pos = '0 0.5 0' // Position initial for the first node
           //var node_pos2 = '0,0.5,0'
           var increase = Math.PI * 2 / nodes.length ;
@@ -243,12 +239,10 @@
             entity.setAttribute('node','id',nodes[i]);
 
             // Calcular las coordenadas X y Z para formar un circulo
-            var change_pos = []
             var connect_pos = []
             change_pos = node_pos.split(" ")
             //connect_pos = node_pos2.split(",")
 
-            console.log('PROBANDO POSICIONES = ' + connect_pos);
             // Change the position X
             var pos_x = parseInt(change_pos[0])
             pos_x = nodes.length*Math.cos(angle);
@@ -272,11 +266,10 @@
             //var node_pos2 = cx.concat(',', cy.concat(',',cz))
             //Incrementamos el angulo
             angle += increase;
-            console.log('angulo = ' + angle);
 
             //Añadimos la posicion al nodo
             entity.setAttribute('node','position',node_pos);
-            console.log('NODE Position = ' + node_pos);
+            //console.log('NODE Position = ' + node_pos);
 
             // Añadimos cada coordenada a su nodo
             nodesP.push(nodes[i])
@@ -288,7 +281,7 @@
 
           // Create CONNECTION
 
-          console.log("<<<<<<<CONNECTION>>>>>>>>> ");
+          //console.log("<<<<<<<CONNECTION>>>>>>>>> ");
           // Depende de si queremos analizar capa ETHERNET o IP
           if (proto == "ip") {
             connections = connections_ip // case to IP Address
@@ -301,12 +294,12 @@
             var entity2 = document.createElement('a-entity');
 
             var key_connections = Object.keys(connections)
-            console.log("Key => " + key_connections)
+            //console.log("Key => " + key_connections)
 
             var prop = connections[key_connections[i]];
             // Para obtener el valor del las propiedad from y to
-            console.log("Direccion From => " + prop.from)
-            console.log("Direccion To => " + prop.to)
+            // console.log("Direccion From => " + prop.from)
+            // console.log("Direccion To => " + prop.to)
 
             entity2.setAttribute('connection','from',prop.from);
             entity2.setAttribute('connection','to',prop.to);
@@ -329,7 +322,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: ejemplo3.json; layout: line; proto: eth"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
 
     </a-scene>
   </body>
