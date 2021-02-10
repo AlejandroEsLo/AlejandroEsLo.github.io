@@ -32,3 +32,6 @@ Circular:
 https://alejandroeslo.github.io/TFG/P4_netSimulator(circle).html
 
 https://alejandroeslo.github.io/TFG/P4_netSimulator(circle)_demo2.html
+
+Pruebas:
+https://alejandroeslo.github.io/TFG/P4_netSimulator(circle)Pruebas.html

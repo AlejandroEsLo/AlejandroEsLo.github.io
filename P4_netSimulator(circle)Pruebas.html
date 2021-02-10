@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>NET SIMULATOR</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+
+    <script>
+
+    AFRAME.registerComponent('node', {
+      schema: {
+        obj_type: {type: 'string', default: 'box'},
+        color: {type: 'color', default: 'blue'},
+        position: {type: 'vec3'},
+        id: {type: 'string'}
+      },
+      init: function () {
+        //console.log('In to the NODE Component');
+        let el = this.el
+        let data = this.data
+        el.setAttribute('geometry', {primitive: data.obj_type});
+        el.setAttribute('material', 'color', data.color);
+        el.setAttribute('position', data.position);
+        el.setAttribute('id', data.id);
+      }
+    });
+
+    AFRAME.registerComponent('connection', {
+      schema: {
+        from:{type: 'string'},
+        to:{type: 'string'},
+      },
+      init: function () {
+        //console.log("-------------CONNECTION Component---------------");
+
+        let el = this.el
+        let data = this.data
+        let node_from = data.from
+        let node_to = data.to
+
+        // We obtain position Node From
+        let node_from_el = document.getElementById(node_from);
+        let pos1 = node_from_el.getAttribute('position');
+        let pos_from = Object.values(pos1);
+
+        // We pass each component of position FROM to string
+        var fromX = pos_from[0];
+        var fx = fromX.toString();
+
+        var fromY = pos_from[1];
+        var fy = fromY.toString();
+
+        var fromZ = pos_from[2];
+        var fz = fromZ.toString();
+
+        // We concatenate all of them into a single string
+        var coorFrom = fx.concat(' ', fy.concat(' ',fz))
+        //console.log('Strings Position from = ' + coorFrom );
+
+        // We obtain position Node To
+        let node_to_el = document.getElementById(node_to);
+        let pos2 = node_to_el.getAttribute('position');
+        let pos_to = Object.values(pos2);
+
+        // We pass each component of position TO to string
+        var toX = pos_to[0];
+        var tx = toX.toString();
+
+        var toY = pos_to[1];
+        var ty = toY.toString();
+
+        var toZ = pos_to[2];
+        var tz = toZ.toString();
+
+        // We concatenate all of them into a single string
+        var coorTo = tx.concat(' ', ty.concat(' ',tz))
+        //console.log('Strings Position to = ' + coorTo );
+
+        // Draw the connection
+        el.setAttribute('tube', {'path': [coorFrom, coorTo] , 'radius': '0.15' });
+        el.setAttribute('material', 'color', 'cyan');
+        el.setAttribute('material', 'opacity', '0.15');
+      }
+    });
+
+    AFRAME.registerComponent('packet', {
+      schema: {
+        duration: {type: 'number', default: '3000'},
+        start: {type: 'number'},
+        color: {type: 'color', default: 'black'},
+        from:{type: 'string'},
+        to:{type: 'string'},
+        pos_ini:{type: 'vec3'},
+        pos_end:{type: 'vec3'}
+      },
+      init: function () {
+        //console.log("-------------PACKET Component---------------");
+
+        let el = this.el
+        let data = this.data
+        let node_from = data.from
+        let node_to = data.to
+
+        // We obtain position Node From
+        let node_from_el = document.getElementById(node_from);
+        let pos1 = node_from_el.getAttribute('position');
+        let pos_from = Object.values(pos1);
+        //console.log('Position from = ' + pos_from);
+
+        data.pos_ini.x = pos_from[0];
+        data.pos_ini.y = pos_from[1];
+        data.pos_ini.z = pos_from[2];
+        //console.log('Position from = ' , data.pos_ini);
+
+        // We obtain position Node To
+        let node_to_el = document.getElementById(node_to);
+        let pos2 = node_to_el.getAttribute('position');
+        let pos_to = Object.values(pos2);
+        //console.log('Position to = ' + pos_to);
+
+        data.pos_end.x = pos_to[0];
+        data.pos_end.y = pos_to[1];
+        data.pos_end.z = pos_to[2];
+        //console.log('Position end = ' , data.pos_end);
+
+        el.setAttribute('geometry', {primitive: 'box'});
+        el.setAttribute('material', 'color', data.color);
+        el.setAttribute( 'scale', {x : 0.1 , y : 2 , z : 0.1});
+        el.setAttribute('position', data.pos_ini);
+        el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start, dur:data.duration});
+
+      }
+    });
+
+    AFRAME.registerComponent('net-simulator', {
+      schema: {
+        file: {type: 'string'},
+        layout: {type: 'string',default: 'circle'},
+        proto: {type: 'string',default: 'eth'}, //eth or ip
+      },
+
+      init: function () {
+        console.log('In to the net-simulator Component');
+        let el = this.el
+        let data = this.data
+        let proto = data.proto
+
+        const request = new XMLHttpRequest();
+        const requestURL = data.file;
+
+        request.open('GET', requestURL);
+        request.responseType = 'text';
+        request.send();
+
+        request.onload = function() {
+          const dataTXT = request.response; // We take the response string
+          const data = JSON.parse(dataTXT); // We convert it to an object
+
+
+          let num_keys = Object.keys(data); // We get keys from our dictionary
+          let num_packets = num_keys.length
+          console.log("Total number of packets = " + num_packets);
+
+          // Array to store all addresses
+          let eth_total = [];
+          let eth_fin = [];
+          let ip_total = [];
+          let ip_fin = [];
+          var connections = {};
+          var connections_eth = {};
+          var connections_ip = {};
+          var all_packet = {};//Array de objetos{numero paquete,dir_src,dir_dst,delay}
+          var all_packet_eth = {};
+          var all_packet_ip = {};
+
+          // Function to keep the unique addresses of the arrays
+          Array.prototype.unique=function(a){
+            return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+          });
+
+          // We go through the JSON file to get the addresses
+          for (let i = 0; i < num_packets; i++) {
+
+            for(key in data[i]._source){
+
+              console.log("--------------------Paquete " + i + "------------------------");
+
+              //---------- <<<<<TIME RELATIVE >>>>>----------
+              let acces3 = data[i]._source[key].frame
+              let time_relative = 5000*Object.values(acces3)[6]
+              //console.log("Time relative " + i + " => " + time_relative);
+
+              //----------<<<<< Ethernet Address >>>>>----------
+              let acces1 = data[i]._source[key].eth
+
+              let eth_dst = Object.values(acces1)[0]//Destination Address
+              //console.log("Ethernet Destination Address " + i + " => " + eth_dst);
+
+              let eth_src = Object.values(acces1)[2]//Source Address
+              //console.log("Ethernet Source Address " + i + " => " + eth_src);
+
+              // We add to our array all the addresses that we are finding
+              eth_total.push(eth_dst)
+              eth_total.push(eth_src)
+              //console.log("Ethernet TOTAL => " + eth_total);
+
+              eth_fin = eth_total.unique();
+              console.log("Ethernet UNICAS => " + eth_fin)
+
+              let num_nodes_eth = eth_fin.length;
+              console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+
+              // We create a list of connections with activity
+              var comparison = [eth_src,eth_dst];
+              var order = comparison.sort(); // we order alphabetically
+              var first_dir = order[0];
+              var second_dir = order[1];
+
+              connections_eth[first_dir+ '-' + second_dir] = {from: eth_src, to: eth_dst}
+
+              // We create a list of Packet Ethernet
+              all_packet_eth['packet_' + i] = {from:eth_src, to: eth_dst, delay:time_relative}
+
+              //----------<<<<< IP Address >>>>>----------
+              let acces2 = data[i]._source[key].ip
+
+              if (acces2 != undefined || acces2 != null) {
+                //Destination Address
+                let ip_dst = Object.values(acces2)[14]//Destination Address
+                //console.log("Ip Address Destination " + i + " => " + ip_dst);
+
+                let ip_src = Object.values(acces2)[13]//Source Address
+                //console.log("Ip Source Address " + i + " => " + ip_src);
+
+                ip_total.push(ip_dst)
+                ip_total.push(ip_src)
+                //console.log("IP TOTAL => " + ip_total);
+
+                ip_fin = ip_total.unique();
+                console.log("IP UNICAS => " + ip_fin);;
+
+                let num_nodes_ip = ip_fin.length;
+                console.log("Numero nodos finales IP => " + num_nodes_ip)
+
+
+                // We create a list of connections with activity
+                var comparison = [ip_src,ip_dst];
+                var order = comparison.sort(); // we order alphabetically
+                var first_dir = order[0];
+                var second_dir = order[1];
+
+                connections_ip[first_dir+ '-' + second_dir] = {from: ip_src, to: ip_dst}
+
+                // We create a list of Packet IP
+                all_packet_ip['packet_' + i] = {from:ip_src, to: ip_dst, delay:time_relative}
+
+              }
+
+            }
+          }
+
+//---------------------------- Create NODES -----------------------------------
+
+          var scene = document.querySelector('a-scene');
+          var nodes = {}
+          var nodesP = []// ARRAY [nodo, coordenada]
+
+          // Depende de si queremos analizar capa ETHERNET o IP
+          if (proto == "ip") {
+            nodes = ip_fin // case to IP Address
+          }else {
+            nodes = eth_fin
+          }
+
+          //console.log("NODES " + nodes);
+          var node_pos = '0 0.5 0' // Position initial for the first node
+          var poster_pos = '0 2 0'
+          var increase = Math.PI * 2 / nodes.length ;
+          angle = 0
+
+
+          for (let i = 0; i < nodes.length; i++) {
+
+            var generarColor = () => "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16))
+
+            var entity = document.createElement('a-entity');
+            var poster = document.createElement('a-entity');
+
+            entity.setAttribute('node','obj_type','box');
+            entity.setAttribute('node','color',generarColor());
+            entity.setAttribute('node','id',nodes[i]);
+
+            // Calcular las coordenadas X y Z para formar un circulo
+            var connect_pos = []
+            var change_pos = node_pos.split(" ")
+
+            // Change the position X
+            var pos_x = parseInt(change_pos[0])
+            var pos_x = nodes.length*Math.cos(angle);
+
+            // Change the position Z
+            var pos_z = parseInt(change_pos[2])
+            var pos_z = nodes.length*Math.sin(angle);
+            pos_z = Math.round(pos_z);
+
+            // We pass each component of position to string
+            var coorX = pos_x;
+            var cx = coorX.toString();
+
+            var coorY = change_pos[1];
+            var cy = coorY.toString();
+
+            var coorZ = pos_z;
+            var cz = coorZ.toString();
+
+            // We concatenate all of them into a single string
+            var node_pos = cx.concat(' ', cy.concat(' ',cz))
+            //var node_pos2 = cx.concat(',', cy.concat(',',cz))
+            //Incrementamos el angulo
+            angle += increase;
+
+            //Añadimos la posicion al nodo
+            entity.setAttribute('node','position',node_pos);
+            //console.log('NODE Position = ' + node_pos);
+
+            // Añadimos cada coordenada a su nodo
+            nodesP.push(nodes[i])
+            //nodesP.push(node_pos)
+
+            // Add to the scene
+            scene.appendChild(entity);
+
+            //---- Introducimos poster de cada Paquete ----
+            //<a-entity position="-1.5 2 -3" material="color: lightgrey"
+            //geometry="primitive:plane; width: 2; height: 0.5;"
+            //text="align:center;value:PRUEBA;width:10;color:red" id="text1"></a-entity>
+
+            var posterY = change_pos[1] * 4;
+            //console.log('POSITION Y = ' + posterY);
+            var py = posterY.toString();
+            var poster_pos = cx.concat(' ', py.concat(' ',cz))
+
+            poster.setAttribute('position',poster_pos);
+            poster.setAttribute('material','color','lightgrey');
+            poster.setAttribute('geometry', {primitive:'plane',height: 0.5, width: 3});
+            poster.setAttribute('text', {width:8, color:'red', value: nodes[i], align:'center'});
+            // Add to the scene
+            scene.appendChild(poster);
+
+          }
+
+//-------------------------- Create CONNECTIONS --------------------------------
+
+          // Depende de si queremos analizar capa ETHERNET o IP
+          if (proto == "ip") {
+            connections = connections_ip // case to IP Address
+          }else {
+            connections = connections_eth
+          }
+
+          for (let i = 0; i < Object.keys(connections).length; i++) {
+
+            var entity2 = document.createElement('a-entity');
+
+            var key_connections = Object.keys(connections)
+            //console.log("Key => " + key_connections)
+
+            var prop = connections[key_connections[i]];
+            // Para obtener el valor del las propiedad from y to
+            //console.log("Direccion From => " + prop.from)
+            // console.log("Direccion To => " + prop.to)
+
+            entity2.setAttribute('connection','from',prop.from);
+            entity2.setAttribute('connection','to',prop.to);
+            // Add to the scene
+            scene.appendChild(entity2);
+          }
+
+//-------------------------- Create PACKETS -----------------------------------
+
+          // Depende de si queremos analizar capa ETHERNET o IP
+          if (proto == "ip") {
+            all_packet = all_packet_ip // case to IP Address
+          }else {
+            all_packet = all_packet_eth
+          }
+
+          console.log("objetos %O:",all_packet)
+
+          for (let i = 0; i < Object.keys(all_packet).length; i++) {
+
+            var entity3 = document.createElement('a-entity');
+
+            var key_all_packet = Object.keys(all_packet)
+            //console.log("Key => " + key_all_packet)
+
+            var prop_packet = all_packet[key_all_packet[i]];
+            // Para obtener el valor del las propiedad from , to y delay
+             //console.log("Direccion From => " + prop_packet.from)
+             //console.log("Direccion To => " + prop_packet.to)
+             //console.log("DELAY => " + prop_packet.delay)
+
+            entity3.setAttribute('packet','from',prop_packet.from);
+            entity3.setAttribute('packet','to',prop_packet.to);
+            entity3.setAttribute('packet','start',prop_packet.delay);
+            entity3.setAttribute('packet','color','red');
+            entity3.setAttribute('packet','duration','5000');
+            // Add to the scene
+            scene.appendChild(entity3);
+            console.log("EScena " + i)
+          }
+
+        }
+
+      }
+    });
+    </script>
+
+  </head>
+
+  <body>
+    <a-scene background="color: #FAFAFA">
+      <a-camera position="0 5 10"></a-camera>
+      <a-entity environment="preset: starry"></a-entity>
+      <a-entity light="type: ambient; color: #FFF"></a-entity>
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: eth"></a-entity>
+
+    </a-scene>
+  </body>
+</html>
