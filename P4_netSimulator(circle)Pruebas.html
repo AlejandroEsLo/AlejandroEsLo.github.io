@@ -390,7 +390,7 @@
             all_packet = all_packet_eth
           }
 
-          console.log("objetos %O:",all_packet)
+          console.log("ALL_PACKET %O:",all_packet)
 
           for (let i = 0; i < Object.keys(all_packet).length; i++) {
 
@@ -412,7 +412,6 @@
             entity3.setAttribute('packet','duration','5000');
             // Add to the scene
             scene.appendChild(entity3);
-            console.log("EScena " + i)
           }
 
         }
@@ -430,7 +429,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: http2_ejemplo.json; layout: line; proto: eth"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: eth"></a-entity>
 
     </a-scene>
   </body>

@@ -306,6 +306,7 @@
             // Change the position Z
             var pos_z = parseInt(change_pos[2])
             pos_z = nodes.length*Math.sin(angle);
+            pos_z = Math.round(pos_z);
 
             // We pass each component of position to string
             var coorX = pos_x;
@@ -371,7 +372,7 @@
             all_packet = all_packet_eth
           }
 
-          //console.log("objetos %O:",all_packet)
+          console.log("objetos %O:",all_packet)
 
           for (let i = 0; i < Object.keys(all_packet).length; i++) {
 
@@ -410,7 +411,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: eth"></a-entity>
 
     </a-scene>
   </body>
