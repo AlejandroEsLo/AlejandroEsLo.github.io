@@ -134,6 +134,27 @@
         el.setAttribute('position', data.pos_ini);
         el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start, dur:data.duration});
 
+        //el.setAttribute('text', {width:20, color:'blue', value: "P", align:'center'});
+
+      }
+    });
+
+
+    AFRAME.registerComponent('poster', {
+      schema: {
+          color: {type: 'color', default: 'white'},
+          position: {type: 'vec3'},
+          text: {type: 'string'}
+
+      },
+      init: function () {
+        //console.log('In to the POSTER Component');
+        let el = this.el
+        let data = this.data
+        el.setAttribute('geometry', {primitive:'plane',height: 0.5, width: 3});
+        el.setAttribute('text', {width:8, color:'red', value: data.text, align:'center'});
+        el.setAttribute('material', 'color', data.color);
+        el.setAttribute('position', data.position);
       }
     });
 
@@ -279,7 +300,7 @@
 
           //console.log("NODES " + nodes);
           var node_pos = '0 0.5 0' // Position initial for the first node
-          //var node_pos2 = '0,0.5,0'
+          var poster_pos = '0 2 0'
           var increase = Math.PI * 2 / nodes.length ;
           angle = 0
 
@@ -289,6 +310,8 @@
             var generarColor = () => "#000000".replace(/0/g, () => (~~(Math.random() * 16)).toString(16))
 
             var entity = document.createElement('a-entity');
+            var poster = document.createElement('a-entity');
+            var poster_behind = document.createElement('a-entity');
 
             entity.setAttribute('node','obj_type','box');
             entity.setAttribute('node','color',generarColor());
@@ -296,16 +319,15 @@
 
             // Calcular las coordenadas X y Z para formar un circulo
             var connect_pos = []
-            change_pos = node_pos.split(" ")
-            //connect_pos = node_pos2.split(",")
+            var change_pos = node_pos.split(" ")
 
             // Change the position X
             var pos_x = parseInt(change_pos[0])
-            pos_x = nodes.length*Math.cos(angle);
+            var pos_x = nodes.length*Math.cos(angle);
 
             // Change the position Z
             var pos_z = parseInt(change_pos[2])
-            pos_z = nodes.length*Math.sin(angle);
+            var pos_z = nodes.length*Math.sin(angle);
             pos_z = Math.round(pos_z);
 
             // We pass each component of position to string
@@ -334,6 +356,33 @@
 
             // Add to the scene
             scene.appendChild(entity);
+
+            //---- Introducimos poster de cada Paquete ----
+
+            //var posterY_packet = change_pos[1] * 4;
+            var posterY_node = change_pos[1] * 5;
+            var posterY_node_behind = change_pos[1] * 5;
+            //console.log('POSITION Y = ' + posterY);
+
+            var py_node = posterY_node.toString();
+            var poster_pos_node = cx.concat(' ', py_node.concat(' ',cz))
+
+            var py_node_behind = posterY_node_behind.toString();
+            var poster_pos_node_behind = cx.concat(' ', py_node_behind.concat(' ',cz))
+
+            poster.setAttribute('poster','position',poster_pos_node);
+            poster.setAttribute('poster','color','lightgrey');
+            poster.setAttribute('poster','text',nodes[i]);
+
+            poster_behind.setAttribute('poster','position',poster_pos_node_behind);
+            poster_behind.setAttribute('poster','color','lightgrey');
+            poster_behind.setAttribute('poster','text',nodes[i]);
+            poster_behind.setAttribute('rotation', {x: 180, y: 0, z: 180});
+
+            // Add to the scene
+            scene.appendChild(poster);
+            scene.appendChild(poster_behind);
+
           }
 
 //-------------------------- Create CONNECTIONS --------------------------------
@@ -372,7 +421,7 @@
             all_packet = all_packet_eth
           }
 
-          console.log("objetos %O:",all_packet)
+          console.log("ALL_PACKET %O:",all_packet)
 
           for (let i = 0; i < Object.keys(all_packet).length; i++) {
 
@@ -411,7 +460,7 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: eth"></a-entity>
+      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
 
     </a-scene>
   </body>
