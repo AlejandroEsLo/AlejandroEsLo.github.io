@@ -21,7 +21,7 @@
       //console.log(data);
 
       // Return data as string
-      //console.log(JSON.stringify(data);
+      //console.log(JSON.stringify(data));
 
       // We get keys from our dictionary
       let num_keys = Object.keys(data);
@@ -37,6 +37,7 @@
       let ip_fin = [];
       var all_packet ={}; //Array de objetos{numero paquete,eth_dst,eth_src,delay}
       var connections={}
+      var protocols = {}
 
       // Function to keep the unique addresses of the arrays
       Array.prototype.unique=function(a){
@@ -128,6 +129,34 @@
             let acces3 = data[i]._source[key].frame
             let time_relative = Object.values(acces3)[6]
             console.log("Time relative " + i + " => " + time_relative);
+
+            //---------- <<<<< PROTOCOLOS >>>>>----------
+            let acces4 = data[i]._source[key].frame
+            let all_protocols = Object.values(acces4)[12]
+            var arrayProtocols = all_protocols.split(":");
+            var arrayFinal = [];
+            //eth", "ethertype", "ip", "tcp", "http"
+            for (let i = 0; i < arrayProtocols.length; i++) {
+              if (arrayProtocols[i] == "eth") {
+                arrayFinal.push("eth")
+              }else if (arrayProtocols[i] == "ip") {
+                arrayFinal.push("ip")
+              }else if (arrayProtocols[i] == "tcp") {
+                arrayFinal.push("tcp")
+              }else if (arrayProtocols[i] == "http") {
+                arrayFinal.push("http")
+              }
+            }
+            console.log("PROTOCOLOS FINALES" + i + " => " + arrayFinal);
+
+            protocols["Packet "+ i +  ":"] = {Protocolo: arrayFinal }
+            console.log("objetos %O:",protocols)
+
+
+            var LastValue = arrayFinal[arrayFinal.length - 1]
+            console.log("Ultimo valor" + i + " => " + LastValue);
+            //console.log("SEPARADOS " + i + " => " + arrayDeCadenas);
+
 
             // -----------------------PROBANDO------------------------
             //var packet_list = {packet: {numero: i, to: eth_dst, from:eth_src, delay:time_relative}};
