@@ -12,6 +12,25 @@
 
     <script>
 
+
+      AFRAME.registerComponent('poster', {
+        schema: {
+            color: {type: 'color', default: 'white'},
+            position: {type: 'vec3'},
+            text: {type: 'string'}
+
+        },
+        init: function () {
+          //console.log('In to the POSTER Component');
+          let el = this.el
+          let data = this.data
+          el.setAttribute('geometry', {primitive:'plane',height: 0.5, width: 3});
+          el.setAttribute('text', {width:8, color:'red', value: data.text, align:'center'});
+          el.setAttribute('material', 'color', data.color);
+          el.setAttribute('position', data.position);
+        }
+    });
+
     AFRAME.registerComponent('node', {
       schema: {
         obj_type: {type: 'string', default: 'box'},
@@ -96,7 +115,9 @@
         from:{type: 'string'},
         to:{type: 'string'},
         pos_ini:{type: 'vec3'},
-        pos_end:{type: 'vec3'}
+        pos_end:{type: 'vec3'},
+        pos_poster:{type: 'vec3'},
+        LastValue:{type: 'string'}
       },
       init: function () {
         //console.log("-------------PACKET Component---------------");
@@ -130,33 +151,36 @@
 
         el.setAttribute('geometry', {primitive: 'box'});
         el.setAttribute('material', 'color', data.color);
-        el.setAttribute( 'scale', {x : 0.1 , y : 2 , z : 0.1});
+        el.setAttribute('scale', {x : 0.1 , y : 2 , z : 0.1});
         el.setAttribute('position', data.pos_ini);
         el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start, dur:data.duration});
 
-        //el.setAttribute('text', {width:20, color:'blue', value: "P", align:'center'});
+//------ Ponemos poster en paquetes
+        var poster2 = document.createElement('a-entity');
+        var poster_behind2 = document.createElement('a-entity');
+        // We obtain position poster
+        data.pos_poster.x = pos_from[0];
+        data.pos_poster.y = pos_from[1]*1.3;
+        data.pos_poster.z = pos_from[2];
+
+        poster2.setAttribute('poster','position',data.pos_poster);
+        poster2.setAttribute('scale', {x : 10 , y : 0.5 , z : 10});
+        poster2.setAttribute('poster','color','black');
+        poster2.setAttribute('poster','text',data.LastValue);
+
+        poster_behind2.setAttribute('poster','position',data.pos_poster);
+        poster_behind2.setAttribute('scale', {x : 10 , y : 0.5 , z : 10});
+        poster_behind2.setAttribute('poster','color','black');
+        poster_behind2.setAttribute('poster','text',data.LastValue);
+        poster_behind2.setAttribute('rotation', {x: 180, y: 0, z: 180});
+
+
+        el.appendChild(poster2);
+        el.appendChild(poster_behind2);
 
       }
     });
 
-
-    AFRAME.registerComponent('poster', {
-      schema: {
-          color: {type: 'color', default: 'white'},
-          position: {type: 'vec3'},
-          text: {type: 'string'}
-
-      },
-      init: function () {
-        //console.log('In to the POSTER Component');
-        let el = this.el
-        let data = this.data
-        el.setAttribute('geometry', {primitive:'plane',height: 0.5, width: 3});
-        el.setAttribute('text', {width:8, color:'red', value: data.text, align:'center'});
-        el.setAttribute('material', 'color', data.color);
-        el.setAttribute('position', data.position);
-      }
-    });
 
     AFRAME.registerComponent('net-simulator', {
       schema: {
@@ -198,6 +222,7 @@
           var all_packet = {};//Array de objetos{numero paquete,dir_src,dir_dst,delay}
           var all_packet_eth = {};
           var all_packet_ip = {};
+          var protocols = {};
 
           // Function to keep the unique addresses of the arrays
           Array.prototype.unique=function(a){
@@ -215,6 +240,30 @@
               let acces3 = data[i]._source[key].frame
               let time_relative = 5000*Object.values(acces3)[6]
               //console.log("Time relative " + i + " => " + time_relative);
+
+              //---------- <<<<< PROTOCOLS >>>>>----------
+              let acces4 = data[i]._source[key].frame
+              let all_protocols = Object.values(acces4)[12]
+              var arrayProtocols = all_protocols.split(":");
+              var arrayFinal = [];
+              //eth", "ethertype", "ip", "tcp", "http"
+              for (let i = 0; i < arrayProtocols.length; i++) {
+                if (arrayProtocols[i] == "eth") {
+                  arrayFinal.push("eth")
+                }else if (arrayProtocols[i] == "ip") {
+                  arrayFinal.push("ip")
+                }else if (arrayProtocols[i] == "tcp") {
+                  arrayFinal.push("tcp")
+                }else if (arrayProtocols[i] == "http") {
+                  arrayFinal.push("http")
+                }
+              }
+
+              protocols["Packet "+ i +  ":"] = {Protocolo: arrayFinal }
+              //console.log("objetos %O:",protocols)
+
+              var LastValue = arrayFinal[arrayFinal.length - 1]
+              //console.log("Ultimo valor" + i + " => " + LastValue);
 
               //----------<<<<< Ethernet Address >>>>>----------
               let acces1 = data[i]._source[key].eth
@@ -290,6 +339,7 @@
           var scene = document.querySelector('a-scene');
           var nodes = {}
           var nodesP = []// ARRAY [nodo, coordenada]
+          var position_nodes = []
 
           // Depende de si queremos analizar capa ETHERNET o IP
           if (proto == "ip") {
@@ -352,14 +402,12 @@
 
             // Añadimos cada coordenada a su nodo
             nodesP.push(nodes[i])
-            //nodesP.push(node_pos)
+            position_nodes.push(node_pos)
 
             // Add to the scene
             scene.appendChild(entity);
 
             //---- Introducimos poster de cada Paquete ----
-
-            //var posterY_packet = change_pos[1] * 4;
             var posterY_node = change_pos[1] * 5;
             var posterY_node_behind = change_pos[1] * 5;
             //console.log('POSITION Y = ' + posterY);
@@ -426,6 +474,8 @@
           for (let i = 0; i < Object.keys(all_packet).length; i++) {
 
             var entity3 = document.createElement('a-entity');
+            var poster2 = document.createElement('a-entity');
+            var poster_behind2 = document.createElement('a-entity');
 
             var key_all_packet = Object.keys(all_packet)
             //console.log("Key => " + key_all_packet)
@@ -436,13 +486,38 @@
              //console.log("Direccion To => " + prop_packet.to)
              //console.log("DELAY => " + prop_packet.delay)
 
+            /* if (prop_packet.from[i] in nodesP) {
+
+               var index_dato_buscado = nodesP.indexOf(prop_packet.from);
+               var pos_buscada = position_nodes[index_dato_buscado]
+               console.log("dato_buscado => " + pos_buscada);
+             }
+             */
             entity3.setAttribute('packet','from',prop_packet.from);
             entity3.setAttribute('packet','to',prop_packet.to);
             entity3.setAttribute('packet','start',prop_packet.delay);
             entity3.setAttribute('packet','color','red');
             entity3.setAttribute('packet','duration','5000');
+            entity3.setAttribute('packet','LastValue',LastValue);
+/*
+            poster2.setAttribute('poster','position',prop_packet.from);
+            poster2.setAttribute('poster','color','lightgrey');
+            poster2.setAttribute('poster','text',LastValue);
+
+            poster_behind2.setAttribute('poster','position',prop_packet.from);
+            poster_behind2.setAttribute('poster','color','lightgrey');
+            poster_behind2.setAttribute('poster','text',LastValue);
+            poster_behind2.setAttribute('rotation', {x: 180, y: 0, z: 180});
+*/
             // Add to the scene
             scene.appendChild(entity3);
+            //scene.appendChild(poster2);
+            //scene.appendChild(poster_behind2);
+            //console.log("BUSCANDO POSICIONES => " + nodesP)
+
+            //console.log("BUSCANDO POSICIONES => " + position_nodes)
+
+
           }
 
         }
