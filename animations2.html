@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ANIMATIONS</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+
+    <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
+
+  </head>
+  <body>
+    <a-scene background="color: #FAFAFA" environment="preset: forest">
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <a-entity id="box_move" geometry="primitive: box" material="color: red" position="0 1.8 -3" rotation="0 30 0"
+                animation="property:position; to:3 5 -10; dur:2000; dir:alternate; loop:true;
+                pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
+
+      <a-entity id="mybutton" ui-button position= "-5 5 -10" rotation= "90 0 0" scale= "3 3 3"></a-entity>
+
+
+      <script>
+      var box_move = document.getElementById("box_move");
+      var mybutton = document.querySelector('#mybutton');
+
+      var currentEvent = 'move-pause'
+
+      mybutton.addEventListener('click', function () {
+        box_move.dispatchEvent(new CustomEvent(currentEvent))
+
+        switch(currentEvent) {
+          case 'move-resume':
+            currentEvent = 'move-pause'
+            console.log("RESUME EVENT")
+          break
+          case 'move-pause':
+            currentEvent = 'move-resume'
+            console.log("PAUSE EVENT")
+          break
+        }
+      });
+
+
+
+
+      /*----------------------
+
+
+            document.getElementById('thing').addEventListener('pause', function () {
+              document.querySelector('a-animation').setAttribute('from', AFRAME.utils.coordinates.stringify(this.getAttribute('rotation')))
+            })
+
+            var currentEvent = 'rotation-begin'
+
+            document.querySelector('button').addEventListener('click', function () {
+              document.getElementById('thing').dispatchEvent(new CustomEvent(currentEvent))
+              switch(currentEvent) {
+                case 'rotation-begin':
+                case 'rotation-resume':
+                  this.textContent = 'Pause'
+                  currentEvent = 'rotation-pause'
+                break
+                case 'rotation-pause':
+                  this.textContent = 'Resume'
+                  currentEvent = 'rotation-resume'
+                break
+              }
+            })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      *///--------------------
+
+      </script>
+
+    </a-scene>
+  </body>
+</html>
