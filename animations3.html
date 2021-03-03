@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ANIMATIONS</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+
+    <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
+
+  </head>
+  <body>
+    <a-scene background="color: #FAFAFA" environment="preset: forest">
+
+      <a-camera position="-2 2 5"></a-camera>
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+      <a-entity light="type: ambient; color: #CCC"></a-entity>
+
+      <a-entity id="box_red" geometry="primitive: box" material="color: red" position="0 4 -3" rotation="0 30 0"
+                animation="property:position; to:3 5 -10; dur:2000; dir:alternate; loop:true;
+                startEvents:move-begin; pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
+
+      <a-entity id="box_blue" geometry="primitive: box" material="color: blue" position="-5 4 -3" rotation="0 30 0"
+                animation="property:position; to:0 1.8 -3; dur:2000; dir:alternate; loop:true;
+                startEvents:move-begin; pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
+
+      <a-entity id="box_brown" geometry="primitive: box" material="color:#863209" position="0 1 2" rotation="0 30 0"
+                animation="property:position; to:-5 1.8 -3; dur:2000; dir:alternate; loop:true;
+                startEvents:move-begin; pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
+
+      <a-entity id="mybutton" ui-button position= "-5 1 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
+
+
+      <script>
+      var box_red = document.getElementById("box_red");
+      var box_blue = document.getElementById("box_blue");
+      var box_brown = document.getElementById("box_brown");
+      var mybutton = document.querySelector('#mybutton');
+
+      var currentEvent = 'move-begin'
+
+      mybutton.addEventListener('click', function () {
+        box_red.dispatchEvent(new CustomEvent(currentEvent))
+        box_blue.dispatchEvent(new CustomEvent(currentEvent))
+        box_brown.dispatchEvent(new CustomEvent(currentEvent))
+
+        switch(currentEvent) {
+          case 'move-begin':
+          case 'move-resume':
+            currentEvent = 'move-pause'
+            console.log("RESUME EVENT")
+          break
+          case 'move-pause':
+            currentEvent = 'move-resume'
+            console.log("PAUSE EVENT")
+          break
+        }
+      });
+
+
+      </script>
+
+    </a-scene>
+  </body>
+</html>
