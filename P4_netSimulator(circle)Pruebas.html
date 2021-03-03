@@ -8,9 +8,30 @@
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <!-- Button with A-Frame. -->
+    <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
 
 
     <script>
+
+
+      AFRAME.registerComponent('poster', {
+        schema: {
+            color: {type: 'color', default: 'white'},
+            position: {type: 'vec3'},
+            text: {type: 'string'}
+
+        },
+        init: function () {
+          //console.log('In to the POSTER Component');
+          let el = this.el
+          let data = this.data
+          el.setAttribute('geometry', {primitive:'plane',height: 0.5, width: 3});
+          el.setAttribute('text', {width:8, color:'red', value: data.text, align:'center'});
+          el.setAttribute('material', 'color', data.color);
+          el.setAttribute('position', data.position);
+        }
+    });
 
     AFRAME.registerComponent('node', {
       schema: {
@@ -23,10 +44,19 @@
         //console.log('In to the NODE Component');
         let el = this.el
         let data = this.data
-        el.setAttribute('geometry', {primitive: data.obj_type});
-        el.setAttribute('material', 'color', data.color);
-        el.setAttribute('position', data.position);
-        el.setAttribute('id', data.id);
+        if (data.obj_type == 'computer') {
+          el.setAttribute('gltf-model', "gaming_laptop/scene.gltf");
+          el.setAttribute('scale', '0.5 0.5 0.5');
+          el.setAttribute('rotation', '0 -90 0');
+          el.setAttribute('position', data.position);
+          el.setAttribute('id', data.id);
+        }else {
+          el.setAttribute('geometry', {primitive: data.obj_type});
+          el.setAttribute('material', 'color', data.color);
+          el.setAttribute('position', data.position);
+          el.setAttribute('id', data.id)
+        }
+
       }
     });
 
@@ -92,11 +122,14 @@
       schema: {
         duration: {type: 'number', default: '3000'},
         start: {type: 'number'},
+        class:{type: 'string'},
         color: {type: 'color', default: 'black'},
         from:{type: 'string'},
         to:{type: 'string'},
         pos_ini:{type: 'vec3'},
-        pos_end:{type: 'vec3'}
+        pos_end:{type: 'vec3'},
+        pos_poster:{type: 'vec3'},
+        LastValue:{type: 'string'}
       },
       init: function () {
         //console.log("-------------PACKET Component---------------");
@@ -130,10 +163,73 @@
 
         el.setAttribute('geometry', {primitive: 'box'});
         el.setAttribute('material', 'color', data.color);
-        el.setAttribute( 'scale', {x : 0.1 , y : 2 , z : 0.1});
+        el.setAttribute('scale', {x : 0.1 , y : 2 , z : 0.1});
         el.setAttribute('position', data.pos_ini);
-        el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start, dur:data.duration});
+        el.setAttribute('class', data.class);
+        el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start,dur:data.duration,
+                        startEvents:"move-begin", pauseEvents:"move-pause", resumeEvents:"move-resume"});
 
+//------ Ponemos poster en paquetes
+        var poster2 = document.createElement('a-entity');
+        var poster_behind2 = document.createElement('a-entity');
+        // We obtain position poster
+        data.pos_poster.x = pos_from[0];
+        data.pos_poster.y = pos_from[1]*1.3;
+        data.pos_poster.z = pos_from[2];
+
+        poster2.setAttribute('poster','position',data.pos_poster);
+        poster2.setAttribute('scale', {x : 10 , y : 0.5 , z : 10});
+        poster2.setAttribute('poster','color','black');
+        poster2.setAttribute('poster','text',data.LastValue);
+
+        poster_behind2.setAttribute('poster','position',data.pos_poster);
+        poster_behind2.setAttribute('scale', {x : 10 , y : 0.5 , z : 10});
+        poster_behind2.setAttribute('poster','color','black');
+        poster_behind2.setAttribute('poster','text',data.LastValue);
+        poster_behind2.setAttribute('rotation', {x: 180, y: 0, z: 180});
+
+
+        el.appendChild(poster2);
+        el.appendChild(poster_behind2);
+
+      }
+    });
+
+    AFRAME.registerComponent('move', {
+
+      init: function () {
+        console.log('In to the MOVE');
+        let el = this.el
+        let data = this.data
+
+        var mybutton = document.querySelector('#mybutton');
+        var elementos_packets = document.getElementsByClassName('all_packets');
+
+        console.log("paquetes %O:",elementos_packets)
+        var currentEvent = 'move-begin'
+
+        mybutton.addEventListener('click', function () {
+
+          //Recorres la lista de elementos seleccionados
+          for (var i=0; i< elementos_packets.length; i++) {
+            //Añades un evento a cada elemento
+            elementos_packets[i].dispatchEvent(new CustomEvent(currentEvent))
+          }
+
+          switch(currentEvent) {
+            case 'move-begin':
+            case 'move-resume':
+              currentEvent = 'move-pause'
+              console.log("RESUME EVENT")
+            break
+            case 'move-pause':
+              currentEvent = 'move-resume'
+              console.log("PAUSE EVENT")
+            break
+          }
+          //el.emit('net-simulator', currentEvent, false);
+          //console.log("EMIT EVENT")
+        });
       }
     });
 
@@ -145,7 +241,7 @@
       },
 
       init: function () {
-        console.log('In to the net-simulator Component');
+        //console.log('In to the net-simulator Component');
         let el = this.el
         let data = this.data
         let proto = data.proto
@@ -177,6 +273,7 @@
           var all_packet = {};//Array de objetos{numero paquete,dir_src,dir_dst,delay}
           var all_packet_eth = {};
           var all_packet_ip = {};
+          var protocols = {};
 
           // Function to keep the unique addresses of the arrays
           Array.prototype.unique=function(a){
@@ -188,12 +285,36 @@
 
             for(key in data[i]._source){
 
-              console.log("--------------------Paquete " + i + "------------------------");
+            //  console.log("--------------------Paquete " + i + "------------------------");
 
               //---------- <<<<<TIME RELATIVE >>>>>----------
               let acces3 = data[i]._source[key].frame
               let time_relative = 5000*Object.values(acces3)[6]
               //console.log("Time relative " + i + " => " + time_relative);
+
+              //---------- <<<<< PROTOCOLS >>>>>----------
+              let acces4 = data[i]._source[key].frame
+              let all_protocols = Object.values(acces4)[12]
+              var arrayProtocols = all_protocols.split(":");
+              var arrayFinal = [];
+              //eth", "ethertype", "ip", "tcp", "http"
+              for (let i = 0; i < arrayProtocols.length; i++) {
+                if (arrayProtocols[i] == "eth") {
+                  arrayFinal.push("eth")
+                }else if (arrayProtocols[i] == "ip") {
+                  arrayFinal.push("ip")
+                }else if (arrayProtocols[i] == "tcp") {
+                  arrayFinal.push("tcp")
+                }else if (arrayProtocols[i] == "http") {
+                  arrayFinal.push("http")
+                }
+              }
+
+              protocols["Packet "+ i +  ":"] = {Protocolo: arrayFinal }
+              //console.log("objetos %O:",protocols)
+
+              var LastValue = arrayFinal[arrayFinal.length - 1]
+              //console.log("Ultimo valor" + i + " => " + LastValue);
 
               //----------<<<<< Ethernet Address >>>>>----------
               let acces1 = data[i]._source[key].eth
@@ -210,10 +331,10 @@
               //console.log("Ethernet TOTAL => " + eth_total);
 
               eth_fin = eth_total.unique();
-              console.log("Ethernet UNICAS => " + eth_fin)
+              //console.log("Ethernet UNICAS => " + eth_fin)
 
               let num_nodes_eth = eth_fin.length;
-              console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+              //console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
 
               // We create a list of connections with activity
               var comparison = [eth_src,eth_dst];
@@ -242,10 +363,10 @@
                 //console.log("IP TOTAL => " + ip_total);
 
                 ip_fin = ip_total.unique();
-                console.log("IP UNICAS => " + ip_fin);;
+                //console.log("IP UNICAS => " + ip_fin);;
 
                 let num_nodes_ip = ip_fin.length;
-                console.log("Numero nodos finales IP => " + num_nodes_ip)
+                //console.log("Numero nodos finales IP => " + num_nodes_ip)
 
 
                 // We create a list of connections with activity
@@ -269,6 +390,7 @@
           var scene = document.querySelector('a-scene');
           var nodes = {}
           var nodesP = []// ARRAY [nodo, coordenada]
+          var position_nodes = []
 
           // Depende de si queremos analizar capa ETHERNET o IP
           if (proto == "ip") {
@@ -290,8 +412,9 @@
 
             var entity = document.createElement('a-entity');
             var poster = document.createElement('a-entity');
+            var poster_behind = document.createElement('a-entity');
 
-            entity.setAttribute('node','obj_type','box');
+            entity.setAttribute('node','obj_type','computer');
             entity.setAttribute('node','color',generarColor());
             entity.setAttribute('node','id',nodes[i]);
 
@@ -330,27 +453,34 @@
 
             // Añadimos cada coordenada a su nodo
             nodesP.push(nodes[i])
-            //nodesP.push(node_pos)
+            position_nodes.push(node_pos)
 
             // Add to the scene
             scene.appendChild(entity);
 
             //---- Introducimos poster de cada Paquete ----
-            //<a-entity position="-1.5 2 -3" material="color: lightgrey"
-            //geometry="primitive:plane; width: 2; height: 0.5;"
-            //text="align:center;value:PRUEBA;width:10;color:red" id="text1"></a-entity>
-
-            var posterY = change_pos[1] * 4;
+            var posterY_node = change_pos[1] * 5;
+            var posterY_node_behind = change_pos[1] * 5;
             //console.log('POSITION Y = ' + posterY);
-            var py = posterY.toString();
-            var poster_pos = cx.concat(' ', py.concat(' ',cz))
 
-            poster.setAttribute('position',poster_pos);
-            poster.setAttribute('material','color','lightgrey');
-            poster.setAttribute('geometry', {primitive:'plane',height: 0.5, width: 3});
-            poster.setAttribute('text', {width:8, color:'red', value: nodes[i], align:'center'});
+            var py_node = posterY_node.toString();
+            var poster_pos_node = cx.concat(' ', py_node.concat(' ',cz))
+
+            var py_node_behind = posterY_node_behind.toString();
+            var poster_pos_node_behind = cx.concat(' ', py_node_behind.concat(' ',cz))
+
+            poster.setAttribute('poster','position',poster_pos_node);
+            poster.setAttribute('poster','color','lightgrey');
+            poster.setAttribute('poster','text',nodes[i]);
+
+            poster_behind.setAttribute('poster','position',poster_pos_node_behind);
+            poster_behind.setAttribute('poster','color','lightgrey');
+            poster_behind.setAttribute('poster','text',nodes[i]);
+            poster_behind.setAttribute('rotation', {x: 180, y: 0, z: 180});
+
             // Add to the scene
             scene.appendChild(poster);
+            scene.appendChild(poster_behind);
 
           }
 
@@ -410,8 +540,10 @@
             entity3.setAttribute('packet','start',prop_packet.delay);
             entity3.setAttribute('packet','color','red');
             entity3.setAttribute('packet','duration','5000');
-            // Add to the scene
+            entity3.setAttribute('packet','LastValue',LastValue);
+            entity3.setAttribute('packet','class', 'all_packets')
             scene.appendChild(entity3);
+
           }
 
         }
@@ -429,7 +561,12 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: eth"></a-entity>
+      <!-- Adds UI button widget -->
+      <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
+
+      <a-entity id="simulator" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
+
+      <a-entity move></a-entity>
 
     </a-scene>
   </body>
