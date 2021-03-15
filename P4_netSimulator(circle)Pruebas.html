@@ -182,10 +182,10 @@
               if (i == Math.ceil(data.start/1000)) {
                 //console.log("DATA %O:",data)
                 var packet_move = document.getElementById(data.id);
-                console.log("poner a mover "+ packet_move);
+                console.log("poner a mover "+ data.id);
 
                 packet_move.setAttribute('animation', {property:'position', to:data.pos_end ,dur:data.duration,
-                                 pauseEvents:'move-pause', resumeEvents:'move-resume'});//, delay:data.start
+                                 pauseEvents:'move-pause', resumeEvents:'move-resume'});
 
               }
             console.log("time = "+i);
@@ -260,50 +260,6 @@
       }
     });
 
-/*    AFRAME.registerComponent('move', {
-
-      init: function () {
-        console.log('In to the MOVE');
-        let el = this.el
-        let data = this.data
-
-        var mybutton = document.querySelector('#mybutton');
-        var elementos_packets = document.getElementsByClassName('all_packets');
-
-        console.log("paquetes %O:",elementos_packets)
-        var currentEvent = 'move-begin'
-
-        mybutton.addEventListener('click', function () {
-
-          //Recorres la lista de elementos seleccionados
-          for (var i=0; i< elementos_packets.length; i++) {
-            //Añades un evento a cada elemento
-            elementos_packets[i].emit(currentEvent,null,false)
-
-            //console.log("ELEMENTO  %O= ", elementos_packets[i])
-          }
-
-          switch(currentEvent) {
-            case 'move-begin':
-              console.log("START EVENT")
-              currentEvent = 'move-pause'
-              break
-            case 'move-resume':
-              currentEvent = 'move-pause'
-              console.log("RESUME EVENT")
-            break
-            case 'move-pause':
-              currentEvent = 'move-resume'
-              console.log("PAUSE EVENT")
-            break
-            console.log("currentEvent = " + currentEvent)
-          }
-        });
-
-
-      }
-    });
-*/
     AFRAME.registerComponent('net-simulator', {
       schema: {
         file: {type: 'string'},
@@ -648,11 +604,6 @@
 
     </script>
 
-
-
-
-
-
   </head>
 
   <body>
@@ -666,9 +617,6 @@
       <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
 
       <a-entity id="simulator" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
-
-      <a-entity move></a-entity>
-
 
     </a-scene>
   </body>
