@@ -8,7 +8,8 @@
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
-
+    <!-- Button with A-Frame. -->
+    <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
 
     <script>
 
@@ -42,10 +43,19 @@
         //console.log('In to the NODE Component');
         let el = this.el
         let data = this.data
-        el.setAttribute('geometry', {primitive: data.obj_type});
-        el.setAttribute('material', 'color', data.color);
-        el.setAttribute('position', data.position);
-        el.setAttribute('id', data.id);
+        if (data.obj_type == 'computer') {
+          el.setAttribute('gltf-model', "old_computer/scene.gltf");
+          el.setAttribute('scale', '0.015 0.015 0.015');
+          el.setAttribute('rotation', '0 90 0');
+          el.setAttribute('position', data.position);
+          el.setAttribute('id', data.id);
+        }else {
+          el.setAttribute('geometry', {primitive: data.obj_type});
+          el.setAttribute('material', 'color', data.color);
+          el.setAttribute('position', data.position);
+          el.setAttribute('id', data.id)
+        }
+
       }
     });
 
@@ -71,7 +81,7 @@
         var fromX = pos_from[0];
         var fx = fromX.toString();
 
-        var fromY = pos_from[1];
+        var fromY = pos_from[1]*2.5;
         var fy = fromY.toString();
 
         var fromZ = pos_from[2];
@@ -90,7 +100,7 @@
         var toX = pos_to[0];
         var tx = toX.toString();
 
-        var toY = pos_to[1];
+        var toY = pos_to[1]*2.5;
         var ty = toY.toString();
 
         var toZ = pos_to[2];
@@ -111,6 +121,8 @@
       schema: {
         duration: {type: 'number', default: '3000'},
         start: {type: 'number'},
+        class:{type: 'string'},
+        id:{type: 'string'},
         color: {type: 'color', default: 'black'},
         from:{type: 'string'},
         to:{type: 'string'},
@@ -151,25 +163,88 @@
 
         el.setAttribute('geometry', {primitive: 'box'});
         el.setAttribute('material', 'color', data.color);
-        el.setAttribute('scale', {x : 0.1 , y : 2 , z : 0.1});
+        el.setAttribute('scale', {x : 0.1 , y : 3.8 , z : 0.1});
         el.setAttribute('position', data.pos_ini);
-        el.setAttribute('animation', {property:'position', to:data.pos_end , delay:data.start, dur:data.duration});
+        el.setAttribute('class', data.class);
+        el.setAttribute('id', data.id);
+//------------------- Set interval ...-----------------------------------------
+        let i = 1;
+
+        function run() {
+          if (currentEvent == 'move-pause') {
+            //console.log("currentEvent = move-pause");
+            //console.log("data.start = "+Math.ceil(data.start/1000));
+
+              if (i == Math.ceil(data.start/1000)) {
+                //console.log("DATA %O:",data)
+                var packet_move = document.getElementById(data.id);
+                console.log("poner a mover "+ data.id);
+
+                packet_move.setAttribute('animation', {property:'position', to:data.pos_end ,dur:data.duration,
+                                 pauseEvents:'move-pause', resumeEvents:'move-resume'});
+
+              }
+            console.log("time = "+i);
+            i++;
+          }
+        }
+
+
+        var mybutton = document.querySelector('#mybutton');
+        var elementos_packets = document.getElementsByClassName('all_packets');
+
+        //console.log("paquetes %O:",elementos_packets)
+        var currentEvent = 'move-begin'
+
+        mybutton.addEventListener('click', function () {
+
+
+          //Recorres la lista de elementos seleccionados
+          for (var a=0; a< elementos_packets.length; a++) {
+            //Añades un evento a cada elemento
+            elementos_packets[a].emit(currentEvent,null,false)
+
+          }
+
+          switch(currentEvent) {
+            case 'move-begin':
+            console.log("START EVENT")
+            var refreshInterval = setInterval(run, 1000);
+            currentEvent = 'move-pause'
+            break
+
+            case 'move-resume':
+            currentEvent = 'move-pause'
+            console.log("RESUME EVENT")
+            break
+
+            case 'move-pause':
+            currentEvent = 'move-resume'
+            console.log("PAUSE EVENT")
+            break
+            console.log("currentEvent = " + currentEvent)
+          }
+        });
+
+//-----------------------------------------------------------------------------
+
+
 
 //------ Ponemos poster en paquetes
         var poster2 = document.createElement('a-entity');
         var poster_behind2 = document.createElement('a-entity');
         // We obtain position poster
         data.pos_poster.x = pos_from[0];
-        data.pos_poster.y = pos_from[1]*1.3;
+        data.pos_poster.y = pos_from[1]*1.1;
         data.pos_poster.z = pos_from[2];
 
         poster2.setAttribute('poster','position',data.pos_poster);
-        poster2.setAttribute('scale', {x : 10 , y : 0.5 , z : 10});
+        poster2.setAttribute('scale', {x : 10 , y : 0.2 , z : 10});
         poster2.setAttribute('poster','color','black');
         poster2.setAttribute('poster','text',data.LastValue);
 
         poster_behind2.setAttribute('poster','position',data.pos_poster);
-        poster_behind2.setAttribute('scale', {x : 10 , y : 0.5 , z : 10});
+        poster_behind2.setAttribute('scale', {x : 10 , y : 0.2 , z : 10});
         poster_behind2.setAttribute('poster','color','black');
         poster_behind2.setAttribute('poster','text',data.LastValue);
         poster_behind2.setAttribute('rotation', {x: 180, y: 0, z: 180});
@@ -181,7 +256,6 @@
       }
     });
 
-
     AFRAME.registerComponent('net-simulator', {
       schema: {
         file: {type: 'string'},
@@ -190,7 +264,7 @@
       },
 
       init: function () {
-        console.log('In to the net-simulator Component');
+        //console.log('In to the net-simulator Component');
         let el = this.el
         let data = this.data
         let proto = data.proto
@@ -223,6 +297,8 @@
           var all_packet_eth = {};
           var all_packet_ip = {};
           var protocols = {};
+          var times_packets = {};
+          var array_times = [];
 
           // Function to keep the unique addresses of the arrays
           Array.prototype.unique=function(a){
@@ -234,7 +310,7 @@
 
             for(key in data[i]._source){
 
-              console.log("--------------------Paquete " + i + "------------------------");
+            //  console.log("--------------------Paquete " + i + "------------------------");
 
               //---------- <<<<<TIME RELATIVE >>>>>----------
               let acces3 = data[i]._source[key].frame
@@ -280,10 +356,10 @@
               //console.log("Ethernet TOTAL => " + eth_total);
 
               eth_fin = eth_total.unique();
-              console.log("Ethernet UNICAS => " + eth_fin)
+              //console.log("Ethernet UNICAS => " + eth_fin)
 
               let num_nodes_eth = eth_fin.length;
-              console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
+              //console.log("Numero nodos finales Ethernet => " + num_nodes_eth)
 
               // We create a list of connections with activity
               var comparison = [eth_src,eth_dst];
@@ -312,10 +388,10 @@
                 //console.log("IP TOTAL => " + ip_total);
 
                 ip_fin = ip_total.unique();
-                console.log("IP UNICAS => " + ip_fin);;
+                //console.log("IP UNICAS => " + ip_fin);;
 
                 let num_nodes_ip = ip_fin.length;
-                console.log("Numero nodos finales IP => " + num_nodes_ip)
+                //console.log("Numero nodos finales IP => " + num_nodes_ip)
 
 
                 // We create a list of connections with activity
@@ -363,7 +439,7 @@
             var poster = document.createElement('a-entity');
             var poster_behind = document.createElement('a-entity');
 
-            entity.setAttribute('node','obj_type','box');
+            entity.setAttribute('node','obj_type','computer');
             entity.setAttribute('node','color',generarColor());
             entity.setAttribute('node','id',nodes[i]);
 
@@ -408,8 +484,8 @@
             scene.appendChild(entity);
 
             //---- Introducimos poster de cada Paquete ----
-            var posterY_node = change_pos[1] * 5;
-            var posterY_node_behind = change_pos[1] * 5;
+            var posterY_node = change_pos[1] * 6;
+            var posterY_node_behind = change_pos[1] * 6;
             //console.log('POSITION Y = ' + posterY);
 
             var py_node = posterY_node.toString();
@@ -471,11 +547,10 @@
 
           console.log("ALL_PACKET %O:",all_packet)
 
+
           for (let i = 0; i < Object.keys(all_packet).length; i++) {
 
             var entity3 = document.createElement('a-entity');
-            var poster2 = document.createElement('a-entity');
-            var poster_behind2 = document.createElement('a-entity');
 
             var key_all_packet = Object.keys(all_packet)
             //console.log("Key => " + key_all_packet)
@@ -484,39 +559,29 @@
             // Para obtener el valor del las propiedad from , to y delay
              //console.log("Direccion From => " + prop_packet.from)
              //console.log("Direccion To => " + prop_packet.to)
-             //console.log("DELAY => " + prop_packet.delay)
+             //console.log("key_all_packet[i]key_all_packet[i] => " + key_all_packet[i])
 
-            /* if (prop_packet.from[i] in nodesP) {
 
-               var index_dato_buscado = nodesP.indexOf(prop_packet.from);
-               var pos_buscada = position_nodes[index_dato_buscado]
-               console.log("dato_buscado => " + pos_buscada);
-             }
-             */
+            // Creamos array para utilizarlo en el setInterval ----------------
+            var times = prop_packet.delay
+            var id_packet = key_all_packet[i]
+
+            times_packets = {times, id_packet}
+            array_times.push(times_packets)
+
+            //let claves = Object.values(array_times);
+            //console.log("times_packets  %O= ", claves)
+            //-----------------------------------------------------------------
+
+            entity3.setAttribute('packet','id',key_all_packet[i]);
             entity3.setAttribute('packet','from',prop_packet.from);
             entity3.setAttribute('packet','to',prop_packet.to);
             entity3.setAttribute('packet','start',prop_packet.delay);
             entity3.setAttribute('packet','color','red');
             entity3.setAttribute('packet','duration','5000');
             entity3.setAttribute('packet','LastValue',LastValue);
-/*
-            poster2.setAttribute('poster','position',prop_packet.from);
-            poster2.setAttribute('poster','color','lightgrey');
-            poster2.setAttribute('poster','text',LastValue);
-
-            poster_behind2.setAttribute('poster','position',prop_packet.from);
-            poster_behind2.setAttribute('poster','color','lightgrey');
-            poster_behind2.setAttribute('poster','text',LastValue);
-            poster_behind2.setAttribute('rotation', {x: 180, y: 0, z: 180});
-*/
-            // Add to the scene
+            entity3.setAttribute('packet','class', 'all_packets')
             scene.appendChild(entity3);
-            //scene.appendChild(poster2);
-            //scene.appendChild(poster_behind2);
-            //console.log("BUSCANDO POSICIONES => " + nodesP)
-
-            //console.log("BUSCANDO POSICIONES => " + position_nodes)
-
 
           }
 
@@ -524,6 +589,7 @@
 
       }
     });
+
     </script>
 
   </head>
@@ -535,7 +601,10 @@
       <a-entity light="type: ambient; color: #FFF"></a-entity>
       <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="ReadJSON" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
+      <!-- Adds UI button widget -->
+      <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
+
+      <a-entity id="simulator" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
 
     </a-scene>
   </body>
