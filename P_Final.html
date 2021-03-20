@@ -242,16 +242,33 @@
         poster2.setAttribute('scale', {x : 10 , y : 0.2 , z : 10});
         poster2.setAttribute('poster','color','black');
         poster2.setAttribute('poster','text',data.LastValue);
+        poster2.setAttribute('visible', false);
 
         poster_behind2.setAttribute('poster','position',data.pos_poster);
         poster_behind2.setAttribute('scale', {x : 10 , y : 0.2 , z : 10});
         poster_behind2.setAttribute('poster','color','black');
         poster_behind2.setAttribute('poster','text',data.LastValue);
         poster_behind2.setAttribute('rotation', {x: 180, y: 0, z: 180});
-
+        poster_behind2.setAttribute('visible', false);
 
         el.appendChild(poster2);
         el.appendChild(poster_behind2);
+
+        //--visibility control of package signs
+        var active = 'on'
+        el.addEventListener('click', function () {
+          if (active == 'on') {
+            poster2.setAttribute('visible', true);
+            poster_behind2.setAttribute('visible', true);
+            console.log("active visible = " + active);
+            active = 'off'
+          }else if (active == 'off') {
+            poster2.setAttribute('visible', false);
+            poster_behind2.setAttribute('visible', false);
+            console.log("active invisible = " + active);
+            active = 'on'
+          }
+        });
 
       }
     });
