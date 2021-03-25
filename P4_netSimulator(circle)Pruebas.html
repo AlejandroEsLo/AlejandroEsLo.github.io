@@ -273,7 +273,7 @@
         // We obtain position info packets eth
         data.pos_info_packet.x = x_info;
         data.pos_info_packet.y = pos_from[1];
-        data.pos_info_packet.z = z_info;
+        data.pos_info_packet.z = Math.abs(pos_from[2]);
 
         packet_eth.setAttribute('geometry', {primitive: 'box'});
         packet_eth.setAttribute('material', 'color', 'blue');
@@ -284,7 +284,7 @@
         // We obtain position info packets ip
         data.pos_info_packet.x = x_info + 2;
         data.pos_info_packet.y = pos_from[1];
-        data.pos_info_packet.z = pos_from[2];
+        data.pos_info_packet.z = Math.abs(pos_from[2]);
 
         packet_ip.setAttribute('geometry', {primitive: 'box'});
         packet_ip.setAttribute('material', 'color', 'yellow');
@@ -295,7 +295,7 @@
         // We obtain position info packets tcp
         data.pos_info_packet.x = x_info - 4;
         data.pos_info_packet.y = pos_from[1];
-        data.pos_info_packet.z = pos_from[2];
+        data.pos_info_packet.z = Math.abs(pos_from[2]);
 
         packet_tcp.setAttribute('geometry', {primitive: 'box'});
         packet_tcp.setAttribute('material', 'color', 'red');
@@ -306,7 +306,7 @@
         // We obtain position info packets http
         data.pos_info_packet.x = x_info -2;
         data.pos_info_packet.y = pos_from[1];
-        data.pos_info_packet.z = pos_from[2];
+        data.pos_info_packet.z = Math.abs(pos_from[2]);
 
         packet_http.setAttribute('geometry', {primitive: 'box'});
         packet_http.setAttribute('material', 'color', 'green');
@@ -352,7 +352,33 @@
 
             });
             packet_tcp.setAttribute('visible', true);
+            packet_tcp.addEventListener('click', function () {
+              console.log("active ON view ON IP" );
+              poster2.setAttribute('visible', true);
+              poster2.setAttribute('text', {width:8, color:'red', value: 'Rojo: TCP' ,align:'center'});
+              poster_behind2.setAttribute('visible', true);
+              poster_behind2.setAttribute('poster','text','AMARILLO' );
+
+              active = 'on'
+              view_info = 'off'
+
+                console.log("PASAMOS A => active ON view OFF " );
+
+            });
             packet_http.setAttribute('visible', true);
+            packet_http.addEventListener('click', function () {
+              console.log("active ON view ON IP" );
+              poster2.setAttribute('visible', true);
+              poster2.setAttribute('text', {width:8, color:'red', value: 'Verde: HTTP' ,align:'center'});
+              poster_behind2.setAttribute('visible', true);
+              poster_behind2.setAttribute('poster','text','AMARILLO' );
+
+              active = 'on'
+              view_info = 'off'
+
+                console.log("PASAMOS A => active ON view OFF " );
+
+            });
             console.log("active visible = " + active);
             active = 'off'
 
@@ -376,7 +402,24 @@
               console.log("PASAMOS A => active OFF view ON " );
             });
             packet_tcp.setAttribute('visible', true);
+            packet_tcp.addEventListener('click', function () {
+              console.log("active ON view  OFF IP" );
+              poster2.setAttribute('visible', false);
+              poster_behind2.setAttribute('visible', false);
+              active = 'on'
+              view_info = 'on'
+              console.log("PASAMOS A => active OFF view ON " );
+            });
+
             packet_http.setAttribute('visible', true);
+            packet_http.addEventListener('click', function () {
+              console.log("active ON view  OFF IP" );
+              poster2.setAttribute('visible', false);
+              poster_behind2.setAttribute('visible', false);
+              active = 'on'
+              view_info = 'on'
+              console.log("PASAMOS A => active OFF view ON " );
+            });
 
           }else if (active == 'off'& view_info == 'off') {
             packet_eth.setAttribute('visible', false);
@@ -755,7 +798,7 @@
       <!-- Adds UI button widget -->
       <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
 
-      <a-entity id="simulator" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
+      <a-entity id="simulator" net-simulator="file: 100packets.json; layout: line; proto: ip"></a-entity>
 
     </a-scene>
   </body>
