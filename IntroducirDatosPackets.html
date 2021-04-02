@@ -134,6 +134,8 @@
         LastValue:{type: 'string'},
         info_from:{type: 'string'},
         info_to:{type: 'string'},
+        port_tcp_dst:{type: 'string'},
+        port_tcp_src:{type: 'string'},
         proto:{type: 'string'}
       },
       init: function () {
@@ -148,7 +150,7 @@
         var info_eth_from = "";
         var info_eth_to = "";
 
-        if (proto_data == "ip") {
+        if (proto_data == "ip") { //&& data.info_from != undefined && data.info_from != null && data.info_to != undefined && data.info_to != null
           var node_from = data.info_from
           var node_to = data.info_to
           info_ip_from = node_from // case to IP Address
@@ -156,7 +158,7 @@
           info_eth_from = data.from // case to IP Address
           info_eth_to = data.to
 
-        }else if (proto_data == "eth") {
+        }else if (proto_data == "eth" && data.from != undefined && data.from != null) {
           var node_from = data.from
           var node_to = data.to
           info_eth_from = node_from // case to IP Address
@@ -164,27 +166,6 @@
           info_ip_from = data.info_from // case to IP Address
           info_ip_to = data.info_to
         }
-
-  /*
-        // Depende de si queremos analizar capa ETHERNET o IP
-        if (data.proto == "ip") {
-          info_ip_from = node_from // case to IP Address
-          info_ip_to = node_to
-          info_eth_from = data.info_from // case to IP Address
-          info_eth_to = data.info_to
-
-        }else if (data.proto == "eth") {
-          info_eth_from = node_from // case to IP Address
-          info_eth_to = node_to
-          info_ip_from = data.info_from // case to IP Address
-          info_ip_to = data.info_to
-        }
-*/
-        console.log("info_eth_from = " + info_eth_from);
-        console.log("info_eth_to = " + info_eth_to);
-        console.log("info_ip_from = " + info_ip_from);
-        console.log("info_ip_to = " + info_ip_to);
-
 
 
         //console.log('Position node from = ' + data.from);
@@ -405,11 +386,13 @@
             });
             packet_tcp.setAttribute('visible', true);
             packet_tcp.addEventListener('click', function () {
-              console.log("active ON view ON IP" );
+              console.log("active ON view ON TCP" );
               poster2.setAttribute('visible', true);
-              poster2.setAttribute('text', {width:8, color:'red', value: 'Rojo: TCP' ,align:'center'});
+              poster2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
+              poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
               poster_behind2.setAttribute('visible', true);
-              poster_behind2.setAttribute('poster','text','AMARILLO' );
+              poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
+              poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
               active = 'on'
               view_info = 'off'
@@ -419,7 +402,7 @@
             });
             packet_http.setAttribute('visible', true);
             packet_http.addEventListener('click', function () {
-              console.log("active ON view ON IP" );
+              console.log("active ON view ON HTTP" );
               poster2.setAttribute('visible', true);
               poster2.setAttribute('text', {width:8, color:'red', value: 'Verde: HTTP' ,align:'center'});
               poster_behind2.setAttribute('visible', true);
@@ -769,11 +752,13 @@
           console.log("tamaño eth =>" + Object.keys(all_packet_eth).length);
           var arrayFinal = [];
           var packet_color = "red";
+
           var eth_dst_data = "empty";
           var eth_src_data = "empty";
           var ip_dst_data = "empty";
           var ip_src_data = "empty";
-
+          var tcp_src = "empty";
+          var tcp_dst = "empty";
 
           for (let i = 0; i < num_packets; i++) {
 
@@ -790,7 +775,7 @@
               //console.log("Ethernet Source Address " + i + " => " + eth_src_data);
 
             }else {
-              eth_dst_data = "empty_dentro"
+              eth_dst_data = "empty"
               eth_src_data = "empty"
             }
 
@@ -807,11 +792,27 @@
               //console.log("Ip Source Address " + i + " => " + ip_src_data);
 
             }else {
-              ip_dst_data = "empty_dentro"
+              ip_dst_data = "empty"
               ip_src_data = "empty"
             }
 
 
+
+            //----------<<<<< Port TCP >>>>>----------
+            let acces_tcp = data[i]._source[key].tcp
+
+            if (acces_tcp != undefined || acces_tcp != null) {
+              //Destination Port
+              tcp_dst = Object.values(acces_tcp)[2]
+              //console.log("TCP Destination Port " + i + " => " + tcp_dst);
+              //Source Port
+              tcp_src = Object.values(acces_tcp)[0]
+              //console.log("TCP Source Port " + i + " => " + tcp_src);
+
+            }else {
+              tcp_dst = "empty"
+              tcp_src = "empty"
+            }
 
 
 
@@ -883,10 +884,13 @@
             entity3.setAttribute('packet','LastValue',LastValue);
             entity3.setAttribute('packet','class', 'all_packets')
             entity3.setAttribute('packet','proto',proto);
+
             entity3.setAttribute('packet','from',eth_src_data);
             entity3.setAttribute('packet','to',eth_dst_data);
             entity3.setAttribute('packet','info_from',ip_src_data);
             entity3.setAttribute('packet','info_to',ip_dst_data);
+            entity3.setAttribute('packet','port_tcp_dst',tcp_dst);
+            entity3.setAttribute('packet','port_tcp_src',tcp_src);
 
             scene.appendChild(entity3);
 
@@ -911,7 +915,7 @@
       <!-- Adds UI button widget -->
       <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
 
-      <a-entity id="simulator" net-simulator="file: http_ejemplo.json; layout: line; proto: ip"></a-entity>
+      <a-entity id="simulator" net-simulator="file: http_ejemplo.json; layout: line; proto: eth"></a-entity>
 
     </a-scene>
   </body>
