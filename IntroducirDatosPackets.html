@@ -384,22 +384,26 @@
                 console.log("PASAMOS A => active ON view OFF " );
 
             });
-            packet_tcp.setAttribute('visible', true);
-            packet_tcp.addEventListener('click', function () {
-              console.log("active ON view ON TCP" );
-              poster2.setAttribute('visible', true);
-              poster2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
-              poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
-              poster_behind2.setAttribute('visible', true);
-              poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
-              poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
-              active = 'on'
-              view_info = 'off'
+            if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
+              packet_tcp.setAttribute('visible', true);
+              packet_tcp.addEventListener('click', function () {
+                console.log("active ON view ON TCP" );
+                poster2.setAttribute('visible', true);
+                poster2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
+                poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
+                poster_behind2.setAttribute('visible', true);
+                poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
+                poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
-                console.log("PASAMOS A => active ON view OFF " );
+                active = 'on'
+                view_info = 'off'
 
-            });
+                  console.log("PASAMOS A => active ON view OFF " );
+
+              });
+            }
+
             packet_http.setAttribute('visible', true);
             packet_http.addEventListener('click', function () {
               console.log("active ON view ON HTTP" );
@@ -436,15 +440,17 @@
               view_info = 'on'
               console.log("PASAMOS A => active OFF view ON " );
             });
-            packet_tcp.setAttribute('visible', true);
-            packet_tcp.addEventListener('click', function () {
-              console.log("active ON view  OFF IP" );
-              poster2.setAttribute('visible', false);
-              poster_behind2.setAttribute('visible', false);
-              active = 'on'
-              view_info = 'on'
-              console.log("PASAMOS A => active OFF view ON " );
-            });
+            if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
+              packet_tcp.setAttribute('visible', true);
+              packet_tcp.addEventListener('click', function () {
+                console.log("active ON view  OFF IP" );
+                poster2.setAttribute('visible', false);
+                poster_behind2.setAttribute('visible', false);
+                active = 'on'
+                view_info = 'on'
+                console.log("PASAMOS A => active OFF view ON " );
+              });
+            }
 
             packet_http.setAttribute('visible', true);
             packet_http.addEventListener('click', function () {
@@ -459,7 +465,9 @@
           }else if (active == 'off'& view_info == 'off') {
             packet_eth.setAttribute('visible', false);
             packet_ip.setAttribute('visible', false);
-            packet_tcp.setAttribute('visible', false);
+            if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
+              packet_tcp.setAttribute('visible', false);
+            }
             packet_http.setAttribute('visible', false);
             console.log("active visible = " + active);
             active = 'on'
@@ -467,7 +475,9 @@
           }else if (active == 'off'& view_info == 'on') {
             packet_eth.setAttribute('visible', false);
             packet_ip.setAttribute('visible', false);
-            packet_tcp.setAttribute('visible', false);
+            if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
+              packet_tcp.setAttribute('visible', false);
+            }
             packet_http.setAttribute('visible', false);
             console.log("active visible = " + active);
             active = 'on'
