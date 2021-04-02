@@ -180,8 +180,17 @@
             //console.log("Elemento seleccionado => " + Object.values(all_packet[0].packet)[2])
             console.log("objetos %O:",all_packet)
             //----------------------------------------------------------
+          }
+          //DATOS TCP
+          let acces_tcp = data[i]._source[key].tcp
 
-
+          if (acces_tcp != undefined || acces_tcp != null) {
+            //Destination Port
+            let tcp_dst = Object.values(acces_tcp)[2]
+            console.log("TCP Destination Port " + i + " => " + tcp_dst);
+            //Source Port
+            let tcp_src = Object.values(acces_tcp)[0]
+            console.log("TCP Source Port " + i + " => " + tcp_src);
 
           }
         }
