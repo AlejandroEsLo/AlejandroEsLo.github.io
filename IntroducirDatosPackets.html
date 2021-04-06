@@ -138,6 +138,9 @@
         info_from_eth:{type: 'string'},
         info_to_eth:{type: 'string'},
 
+        info_http1:{type: 'string'},
+        info_http2:{type: 'string'},
+
         info_from:{type: 'string'},
         info_to:{type: 'string'},
         port_tcp_dst:{type: 'string'},
@@ -172,7 +175,7 @@
           info_ip_from = data.info_from_ip
           info_ip_to = data.info_to_ip
         }
-        if (node_from) {//&& data.LastValue == proto_data
+        if (node_from) {
           //console.log('num paquetes ');
           //console.log('node_from => ' + node_from);
           // We obtain position Node From
@@ -274,7 +277,7 @@
 
           // We obtain position poster
           data.pos_poster.x = pos_from[0];
-          data.pos_poster.y = pos_from[1]*3;
+          data.pos_poster.y = pos_from[1]*4;
           data.pos_poster.z = pos_from[2];
 
           poster2.setAttribute('poster','position',data.pos_poster);
@@ -317,8 +320,8 @@
           packet_eth.setAttribute('visible', false);
 
           // We obtain position info packets ip
-          data.pos_info_packet.x = x_info + 2;
-          data.pos_info_packet.y = pos_from[1];
+          data.pos_info_packet.x = x_info;
+          data.pos_info_packet.y = pos_from[1] + 0.25;
           data.pos_info_packet.z = Math.abs(pos_from[2]);
 
           packet_ip.setAttribute('geometry', {primitive: 'box'});
@@ -328,8 +331,8 @@
           packet_ip.setAttribute('visible', false);
 
           // We obtain position info packets tcp
-          data.pos_info_packet.x = x_info - 4;
-          data.pos_info_packet.y = pos_from[1];
+          data.pos_info_packet.x = x_info;
+          data.pos_info_packet.y = pos_from[1] + 0.5;
           data.pos_info_packet.z = Math.abs(pos_from[2]);
 
           packet_tcp.setAttribute('geometry', {primitive: 'box'});
@@ -339,8 +342,8 @@
           packet_tcp.setAttribute('visible', false);
 
           // We obtain position info packets http
-          data.pos_info_packet.x = x_info -2;
-          data.pos_info_packet.y = pos_from[1];
+          data.pos_info_packet.x = x_info;
+          data.pos_info_packet.y = pos_from[1] + 0.75;
           data.pos_info_packet.z = Math.abs(pos_from[2]);
 
           packet_http.setAttribute('geometry', {primitive: 'box'});
@@ -364,10 +367,10 @@
               packet_eth.addEventListener('click', function () {
                 //console.log("active ON view ON ETH" );
                 poster2.setAttribute('visible', true);
-                poster2.setAttribute('text', {width:4, color:'red', value: 'Protocolo ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
+                poster2.setAttribute('text', {width:4, color:'blue', value: 'Protocolo ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
                 poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
                 poster_behind2.setAttribute('visible', true);
-                poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocolo ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
+                poster_behind2.setAttribute('text', {width:4, color:'blue', value: 'Protocolo ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
                 poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
                 active = 'on'
@@ -375,22 +378,24 @@
                   //console.log("PASAMOS A => active ON view OFF " );
 
               });
-              packet_ip.setAttribute('visible', true);
-              packet_ip.addEventListener('click', function () {
-                //console.log("active ON view ON IP" );
-                poster2.setAttribute('visible', true);
-                poster2.setAttribute('text', {width:4, color:'red', value: 'Protocolo IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
-                poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
-                poster_behind2.setAttribute('visible', true);
-                poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocolo IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
-                poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
-                active = 'on'
-                view_info = 'off'
+              if (info_ip_from != "" || info_ip_to != "") {
+                packet_ip.setAttribute('visible', true);
+                packet_ip.addEventListener('click', function () {
+                  //console.log("active ON view ON IP" );
+                  poster2.setAttribute('visible', true);
+                  poster2.setAttribute('text', {width:4, color:'yellow', value: 'Protocolo IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
+                  poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
+                  poster_behind2.setAttribute('visible', true);
+                  poster_behind2.setAttribute('text', {width:4, color:'yellow', value: 'Protocolo IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
+                  poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
+                  active = 'on'
+                  view_info = 'off'
                   //console.log("PASAMOS A => active ON view OFF " );
 
-              });
+                });
+              };
 
               if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
                 packet_tcp.setAttribute('visible', true);
@@ -411,23 +416,27 @@
                 });
               }
 
-              packet_http.setAttribute('visible', true);
-              packet_http.addEventListener('click', function () {
-                //console.log("active ON view ON HTTP" );
-                poster2.setAttribute('visible', true);
-                poster2.setAttribute('text', {width:8, color:'red', value: 'Verde: HTTP' ,align:'center'});
-                poster_behind2.setAttribute('visible', true);
-                poster_behind2.setAttribute('poster','text','AMARILLO' );
+              if (data.info_http1 != "empty" || data.info_http2 != "empty") {
+                packet_http.setAttribute('visible', true);
+                packet_http.addEventListener('click', function () {
+                  //console.log("active ON view ON HTTP" );
+                  poster2.setAttribute('visible', true);
+                  poster2.setAttribute('text', {width:4, color:'green', value: 'Protocolo HTTP\n '+data.info_http1+ '\n '+data.info_http2 ,align:'center'});
+                  poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
+                  poster_behind2.setAttribute('visible', true);
+                  poster_behind2.setAttribute('text', {width:4, color:'green', value: 'Protocolo HTTP\n '+data.info_http1+ '\n '+data.info_http2 ,align:'center'});
+                  poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
-                active = 'on'
-                view_info = 'off'
-
+                  active = 'on'
+                  view_info = 'off'
                   //console.log("PASAMOS A => active ON view OFF " );
+                });
+              }
 
-              });
+
               //console.log("active visible = " + active);
               active = 'off'
-
+//*****************************************************************************
             }else if (active == 'on' & view_info == 'off') {
               packet_eth.setAttribute('visible', true);
               packet_eth.addEventListener('click', function () {
@@ -438,15 +447,19 @@
                 view_info = 'on'
                 //console.log("PASAMOS A => active OFF view ON " );
               });
-              packet_ip.setAttribute('visible', true);
-              packet_ip.addEventListener('click', function () {
-                //console.log("active ON view  OFF IP" );
-                poster2.setAttribute('visible', false);
-                poster_behind2.setAttribute('visible', false);
-                active = 'on'
-                view_info = 'on'
-                //console.log("PASAMOS A => active OFF view ON " );
-              });
+
+              if (info_ip_from != "" || info_ip_to != "") {
+                packet_ip.setAttribute('visible', true);
+                packet_ip.addEventListener('click', function () {
+                  //console.log("active ON view  OFF IP" );
+                  poster2.setAttribute('visible', false);
+                  poster_behind2.setAttribute('visible', false);
+                  active = 'on'
+                  view_info = 'on'
+                  //console.log("PASAMOS A => active OFF view ON " );
+                });
+              };
+
               if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
                 packet_tcp.setAttribute('visible', true);
                 packet_tcp.addEventListener('click', function () {
@@ -459,34 +472,52 @@
                 });
               }
 
-              packet_http.setAttribute('visible', true);
-              packet_http.addEventListener('click', function () {
-                //console.log("active ON view  OFF IP" );
-                poster2.setAttribute('visible', false);
-                poster_behind2.setAttribute('visible', false);
-                active = 'on'
-                view_info = 'on'
-                //console.log("PASAMOS A => active OFF view ON " );
-              });
+              if (data.info_http1 != "empty" || data.info_http2 != "empty") {
+                packet_http.setAttribute('visible', true);
+                packet_http.addEventListener('click', function () {
+                  //console.log("active ON view  OFF IP" );
+                  poster2.setAttribute('visible', false);
+                  poster_behind2.setAttribute('visible', false);
+                  active = 'on'
+                  view_info = 'on'
+                  //console.log("PASAMOS A => active OFF view ON " );
+                });
+              }
 
+//*****************************************************************************
             }else if (active == 'off'& view_info == 'off') {
               packet_eth.setAttribute('visible', false);
-              packet_ip.setAttribute('visible', false);
+              if (info_ip_from != "" || info_ip_to != "") {
+                  packet_ip.setAttribute('visible', false);
+              }
+
               if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
                 packet_tcp.setAttribute('visible', false);
               }
-              packet_http.setAttribute('visible', false);
+
+              if (data.info_http1 != "empty" || data.info_http2 != "empty") {
+                packet_http.setAttribute('visible', false);
+              }
+
               //console.log("active visible = " + active);
               active = 'on'
 
             }else if (active == 'off'& view_info == 'on') {
               packet_eth.setAttribute('visible', false);
-              packet_ip.setAttribute('visible', false);
-              if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
-                packet_tcp.setAttribute('visible', false);
+
+              if (info_ip_from != "" || info_ip_to != "") {
+                  packet_ip.setAttribute('visible', false);
               }
-              packet_http.setAttribute('visible', false);
-              //console.log("active visible = " + active);
+
+              if (data.port_tcp_src != "empty" || data.port_tcp_dst != "empty") {
+                  packet_tcp.setAttribute('visible', false);
+              }
+
+              if (data.info_http1 != "empty" || data.info_http2 != "empty") {
+                packet_http.setAttribute('visible', false);
+              }
+
+            //console.log("active visible = " + active);
               active = 'on'
             }
           });
@@ -778,6 +809,10 @@
           var ip_src_data = "empty";
           var tcp_src = "empty";
           var tcp_dst = "empty";
+          var in_http = "";
+          var http_method = "empty";
+          var http_url = "empty";
+          var petition ="";
 
           for (let i = 0; i < data.length; i++) {
 
@@ -840,7 +875,39 @@
             }
 
 
-            // Creamos array para utilizarlo en el setInterval ----------------
+            //----------<<<<< DATOS HTTP >>>>>----------
+            let acces_http = data[i]._source[key].http
+
+            if (acces_http != undefined) {
+              petition = Object.entries(acces_http)[2][0] //(http.request.line o http.response.line)
+              console.log("petition :"+ petition)
+            }
+            //console.log("acces_http %O:",acces_http)
+
+            if (acces_http && petition == "http.request.line" ) {
+              //Destination Port
+              in_http = Object.values(acces_http)[0]
+              http_method = Object.values(in_http)[1] //GET
+              console.log("request.method " + i + " => " + http_method);
+              //Source Port
+              http_url = Object.values(in_http)[2]  ///download.html
+              console.log("request.uri " + i + " => " + http_url);
+
+            }else if (acces_http && petition == "http.response.line") {
+              in_http = Object.values(acces_http)[0]
+              http_method = Object.values(in_http)[3]// OK
+              console.log("request.method " + i + " => " + http_method);
+              //Source Port
+              http_url = Object.values(in_http)[2] // 200
+              console.log("request.uri " + i + " => " + http_url);
+
+            }else {
+
+                http_method = "empty"
+                http_url = "empty"
+            }
+
+// Creamos array para utilizarlo en el setInterval ---------------------------
             //---------- <<<<<TIME RELATIVE >>>>>----------
             let acces_time = data[i]._source[key].frame
             let time_relative_data = 5000*Object.values(acces_time)[6]
@@ -895,9 +962,11 @@
 
             entity3.setAttribute('packet','info_from_eth',eth_src_data);
             entity3.setAttribute('packet','info_to_eth',eth_dst_data);
-
             entity3.setAttribute('packet','port_tcp_dst',tcp_dst);
             entity3.setAttribute('packet','port_tcp_src',tcp_src);
+
+            entity3.setAttribute('packet','info_http1',http_method);
+            entity3.setAttribute('packet','info_http2',http_url);
 
             scene.appendChild(entity3);
 
@@ -922,7 +991,13 @@
       <!-- Adds UI button widget -->
       <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
 
-      <a-entity id="simulator" net-simulator="file: pruebas2.json; layout: line; proto: ip"></a-entity>
+      <a-entity id="simulator" net-simulator="file: 100packets_demo1.json; layout: line; proto: ip"></a-entity>
+
+      <a-plane color="#CCC" height="2" width="2" position="7 10 2" text="width:5; color:black;align:center;
+        value:eth => blue\n
+              ip => yellow\n
+              tcp => red\n
+              http => green;"></a-plane>
 
     </a-scene>
   </body>
