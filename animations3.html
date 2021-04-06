@@ -7,7 +7,6 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
-
     <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
 
   </head>
@@ -15,23 +14,23 @@
     <a-scene background="color: #FAFAFA" environment="preset: forest">
 
       <a-camera position="-2 2 5"></a-camera>
-      <a-entity cursor="rayOrigin: mouse"></a-entity>
+      <a-entity raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-entity>
       <a-entity light="type: ambient; color: #CCC"></a-entity>
 
-      <a-entity class="boxs" id="box_red" geometry="primitive: box" material="color: red" position="0 4 -3" rotation="0 30 0"
-                animation="property:position; to:3 5 -10; dur:2000; dir:alternate; loop:true;
+      <a-entity class="boxs clickable" id="box_red" geometry="primitive: box" material="color: red" position="0 4 -3" rotation="0 30 0"
+                animation="property:position; to:3 5 -10; dur:2000; dir:alternate; loop:true; autoplay:false;
                 startEvents:move-begin; pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
 
-      <a-entity class="boxs" id="box_blue" geometry="primitive: box" material="color: blue" position="-5 4 -3" rotation="0 30 0"
-                animation="property:position; to:0 1.8 -3; dur:2000; dir:alternate; loop:true;
+      <a-entity class="boxs clickable" id="box_blue" geometry="primitive: box" material="color: blue" position="-5 4 -3" rotation="0 30 0"
+                animation="property:position; to:0 1.8 -3; dur:2000; dir:alternate; loop:true; autoplay:false;
                 startEvents:move-begin; pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
 
-      <a-entity class="boxs" id="box_brown" geometry="primitive: box" material="color:#863209" position="0 1 2" rotation="0 30 0"
-                animation="property:position; to:-5 1.8 -3; dur:2000; dir:alternate; loop:true;
+      <a-entity class="boxs clickable" id="box_brown" geometry="primitive: box" material="color:#863209" position="0 1 2" rotation="0 30 0"
+                animation="property:position; to:-5 1.8 -3; dur:2000; dir:alternate; loop:true; autoplay:false;
                 startEvents:move-begin; pauseEvents:move-pause; resumeEvents:move-resume"></a-entity>
 
-      <a-entity id="mybutton" ui-button position= "-5 1 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
-
+      <a-entity class="clickable" id="mybutton" ui-button position= "-5 1 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
+      <a-entity class="clickable" geometry="primitive: box" position="1 0 0"></a-entity>
 
       <script>
       var box_red = document.getElementById("box_red");
@@ -43,22 +42,25 @@
 
       var currentEvent = 'move-begin'
 
-      mybutton.addEventListener('click', function () {
+      mybutton.addEventListener('raycaster-intersection', function () {
         //box_red.dispatchEvent(new CustomEvent(currentEvent))
         //box_blue.dispatchEvent(new CustomEvent(currentEvent))
-        
+
 //--------------------------- PARA EJECUTARLO CON CLASES------------------------
 
         //Recorres la lista de elementos seleccionados
         for (var i=0; i< all_box.length; i++) {
           //Añades un evento a cada elemento
-          all_box[i].dispatchEvent(new CustomEvent(currentEvent))
+          all_box[i].emit(currentEvent,null,false)
         }
 
 //------------------------------------------------------------------------------
 
         switch(currentEvent) {
           case 'move-begin':
+          console.log("START EVENT")
+          currentEvent = 'move-pause'
+          break
           case 'move-resume':
             currentEvent = 'move-pause'
             console.log("RESUME EVENT")

@@ -193,6 +193,32 @@
             console.log("TCP Source Port " + i + " => " + tcp_src);
 
           }
+
+
+          //DATOS HTTP
+          let acces_http = data[i]._source[key].http
+          let petition = Object.entries(acces_http)[2][0] //(http.request.line o http.response.line)
+
+          console.log("acces_http %O:",acces_http)
+
+          if (acces_http && petition == "http.request.line" ) {
+            //Destination Port
+            let in_http = Object.values(acces_http)[0]
+            let http_method = Object.values(in_http)[1] //GET
+            console.log("request.method " + i + " => " + http_method);
+            //Source Port
+            let http_url = Object.values(in_http)[2]  ///download.html
+            console.log("request.uri " + i + " => " + http_url);
+
+          }else if (acces_http && petition == "http.response.line") {
+            let in_http = Object.values(acces_http)[0]
+            let http_method = Object.values(in_http)[3]// OK
+            console.log("request.method " + i + " => " + http_method);
+            //Source Port
+            let http_url = Object.values(in_http)[2] // 200
+            console.log("request.uri " + i + " => " + http_url);
+
+          }
         }
       }
     }
