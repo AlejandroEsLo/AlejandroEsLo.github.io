@@ -145,7 +145,7 @@
         proto:{type: 'string'}
       },
       init: function () {
-        //console.log("-------------PACKET Component---------------");
+        console.log("-------------PACKET Component---------------");
 
         let el = this.el
         let data = this.data
@@ -156,7 +156,7 @@
         var info_eth_from = "";
         var info_eth_to = "";
 
-        if (proto_data == "ip" ) {
+        if (proto_data == "ip" && data.info_from_ip!= '') {
           var node_from = data.info_from_ip
           var node_to = data.info_to_ip
           info_ip_from = node_from
@@ -174,7 +174,7 @@
         }
         if (node_from) {//&& data.LastValue == proto_data
           //console.log('num paquetes ');
-          //console.log('node_from => ' + node_from);
+          console.log('node_from => ' + node_from);
           // We obtain position Node From
           let node_from_el = document.getElementById(node_from);
           //console.log('node_from_el ');
@@ -780,15 +780,15 @@
           var tcp_dst = "empty";
 
           for (let i = 0; i < data.length; i++) {
-
+            console.log("logitud paquetes = " + data.length);
             var entity3 = document.createElement('a-entity');
 
             //----------<<<<< IP Address >>>>>----------
             let acces_ip = data[i]._source[key].ip
 
             //console.log("acces_ip " + i + " => " + Object.values(data[i]._source[key]));
-            //console.log("packet "+i)
-            //console.log("acces_ip  %O= ", data[i]._source[key].ip)
+            console.log("packet "+i)
+            console.log("acces_ip  %O= ", data[i]._source[key].ip)
 
             if (acces_ip) {
               ip_dst_data = Object.values(acces_ip)[14]//Destination Address
@@ -798,12 +798,16 @@
               //console.log("Ip Source Address " + i + " => " + ip_src_data);
 
 
-              //console.log('info_from_ip => ' + ip_src_data);
+              console.log('info_from_ip => ' + ip_src_data);
               entity3.setAttribute('packet','info_from_ip',ip_src_data);
               entity3.setAttribute('packet','info_to_ip',ip_dst_data);
 
             }else{
-              //console.log('SALTAMOS ' + i);
+              console.log('SALTAMOS ' + i);
+              //entity3.setAttribute('packet','info_from_ip',"");
+              //entity3.setAttribute('packet','info_to_ip',"");
+
+              i++;
             }
 
 
@@ -848,7 +852,7 @@
 
 
             var id_packet = "packet_" + i
-            //console.log(id_packet);
+            console.log(id_packet);
 
             times_packets = {time_relative_data, id_packet}
             array_times.push(times_packets)
@@ -856,12 +860,12 @@
             //let claves = Object.values(array_times);
             //console.log("times_packets  %O= ", claves)
             //-----------------------------------------------------------------
-
+/*
             //---------- <<<<< PROTOCOLS >>>>>----------
             let acces4 = data[i]._source[key].frame
             let all_protocols = Object.values(acces4)[12]
             var arrayProtocols = all_protocols.split(":");
-            //console.log("arrayProtocols " + i + " = "+ arrayProtocols);
+            console.log("arrayProtocols " + i + " = "+ arrayProtocols);
             //eth", "ethertype", "ip", "tcp", "http"
             for (let i = 0; i < arrayProtocols.length; i++) {
               if (arrayProtocols[i] == "eth") {
@@ -884,12 +888,12 @@
 
             var LastValue = arrayFinal[arrayFinal.length - 1]
             //console.log("Ultimo valor" + i + " => " + LastValue);
-
+*/
             entity3.setAttribute('packet','id',id_packet);
             entity3.setAttribute('packet','start',time_relative_data);
             entity3.setAttribute('packet','color',packet_color);
             entity3.setAttribute('packet','duration','5000');
-            entity3.setAttribute('packet','LastValue',LastValue);
+            //entity3.setAttribute('packet','LastValue',LastValue);
             entity3.setAttribute('packet','class', 'all_packets')
             entity3.setAttribute('packet','proto',proto);
 
