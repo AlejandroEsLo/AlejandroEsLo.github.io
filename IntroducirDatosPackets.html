@@ -175,12 +175,10 @@
           info_ip_from = data.info_from_ip
           info_ip_to = data.info_to_ip
         }
+
         if (node_from) {
-          //console.log('num paquetes ');
-          //console.log('node_from => ' + node_from);
           // We obtain position Node From
           let node_from_el = document.getElementById(node_from);
-          //console.log('node_from_el ');
           let pos1 = node_from_el.getAttribute('position');
           let pos_from = Object.values(pos1);
           //console.log('Position from = ' + pos_from);
@@ -213,16 +211,12 @@
           function run() {
             if (currentEvent == 'move-pause') {
               //console.log("currentEvent = move-pause");
-              //console.log("data.start = "+Math.ceil(data.start/1000));
-
                 if (i == Math.ceil(data.start/1000)) {
                   //console.log("DATA %O:",data)
                   var packet_move = document.getElementById(data.id);
                   //console.log("poner a mover "+ data.id);
-
                   packet_move.setAttribute('animation', {property:'position', to:data.pos_end ,dur:data.duration,
                                    pauseEvents:'move-pause', resumeEvents:'move-resume'});
-
                 }
               //console.log("time = "+i);
               i++;
@@ -231,36 +225,30 @@
 
 
           var mybutton = document.querySelector('#mybutton');
-          var elementos_packets = document.getElementsByClassName('all_packets');
+          var elements_packets = document.getElementsByClassName('all_packets');
+          //console.log("paquetes %O:",elements_packets)
 
-          //console.log("paquetes %O:",elementos_packets)
           var currentEvent = 'move-begin'
-
           mybutton.addEventListener('click', function () {
 
-
-            //Recorres la lista de elementos seleccionados
-            for (var a=0; a< elementos_packets.length; a++) {
-              //Añades un evento a cada elemento
-              elementos_packets[a].emit(currentEvent,null,false)
-
+            //Scroll through the list of selected items
+            for (var a=0; a< elements_packets.length; a++) {
+              //You add an event to each element
+              elements_packets[a].emit(currentEvent,null,false)
             }
 
             switch(currentEvent) {
               case 'move-begin':
-              //console.log("START EVENT")
               var refreshInterval = setInterval(run, 1000);
               currentEvent = 'move-pause'
               break
 
               case 'move-resume':
               currentEvent = 'move-pause'
-              //console.log("RESUME EVENT")
               break
 
               case 'move-pause':
               currentEvent = 'move-resume'
-              //console.log("PAUSE EVENT")
               break
               //console.log("currentEvent = " + currentEvent)
             }
@@ -296,9 +284,8 @@
           el.appendChild(poster2);
           el.appendChild(poster_behind2);
 
+
   //-- Packet for view the information
-
-
           var packet_eth = document.createElement('a-entity');
           var packet_ip = document.createElement('a-entity');
           var packet_tcp = document.createElement('a-entity');
@@ -367,15 +354,15 @@
               packet_eth.addEventListener('click', function () {
                 //console.log("active ON view ON ETH" );
                 poster2.setAttribute('visible', true);
-                poster2.setAttribute('text', {width:4, color:'blue', value: 'Protocolo ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
+                poster2.setAttribute('text', {width:4, color:'blue', value: 'Protocol ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
                 poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
                 poster_behind2.setAttribute('visible', true);
-                poster_behind2.setAttribute('text', {width:4, color:'blue', value: 'Protocolo ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
+                poster_behind2.setAttribute('text', {width:4, color:'blue', value: 'Protocol ETH\nFrom=> '+info_eth_from+ '\nTo=> '+info_eth_to ,align:'center'});
                 poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
                 active = 'on'
                 view_info = 'off'
-                  //console.log("PASAMOS A => active ON view OFF " );
+                  //console.log("Change to => active ON view OFF " );
 
               });
 
@@ -384,15 +371,15 @@
                 packet_ip.addEventListener('click', function () {
                   //console.log("active ON view ON IP" );
                   poster2.setAttribute('visible', true);
-                  poster2.setAttribute('text', {width:4, color:'yellow', value: 'Protocolo IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
+                  poster2.setAttribute('text', {width:4, color:'yellow', value: 'Protocol IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
                   poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
                   poster_behind2.setAttribute('visible', true);
-                  poster_behind2.setAttribute('text', {width:4, color:'yellow', value: 'Protocolo IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
+                  poster_behind2.setAttribute('text', {width:4, color:'yellow', value: 'Protocol IP\nFrom=> '+info_ip_from+ '\nTo=> '+info_ip_to ,align:'center'});
                   poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
                   active = 'on'
                   view_info = 'off'
-                  //console.log("PASAMOS A => active ON view OFF " );
+                  //console.log("Change to => active ON view OFF " );
 
                 });
               };
@@ -402,16 +389,16 @@
                 packet_tcp.addEventListener('click', function () {
                   //console.log("active ON view ON TCP" );
                   poster2.setAttribute('visible', true);
-                  poster2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
+                  poster2.setAttribute('text', {width:4, color:'red', value: 'Protocol TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
                   poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
                   poster_behind2.setAttribute('visible', true);
-                  poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocolo TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
+                  poster_behind2.setAttribute('text', {width:4, color:'red', value: 'Protocol TCP\n Port From=> '+data.port_tcp_src+ '\nPort To=> '+data.port_tcp_dst ,align:'center'});
                   poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
                   active = 'on'
                   view_info = 'off'
 
-                    //console.log("PASAMOS A => active ON view OFF " );
+                    //console.log("Change to => active ON view OFF " );
 
                 });
               }
@@ -421,18 +408,17 @@
                 packet_http.addEventListener('click', function () {
                   //console.log("active ON view ON HTTP" );
                   poster2.setAttribute('visible', true);
-                  poster2.setAttribute('text', {width:4, color:'green', value: 'Protocolo HTTP\n '+data.info_http1+ '\n '+data.info_http2 ,align:'center'});
+                  poster2.setAttribute('text', {width:4, color:'green', value: 'Protocol HTTP\n '+data.info_http1+ '\n '+data.info_http2 ,align:'center'});
                   poster2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
                   poster_behind2.setAttribute('visible', true);
-                  poster_behind2.setAttribute('text', {width:4, color:'green', value: 'Protocolo HTTP\n '+data.info_http1+ '\n '+data.info_http2 ,align:'center'});
+                  poster_behind2.setAttribute('text', {width:4, color:'green', value: 'Protocol HTTP\n '+data.info_http1+ '\n '+data.info_http2 ,align:'center'});
                   poster_behind2.setAttribute('geometry', {primitive:'plane',height: 0.75, width: 2.5});
 
                   active = 'on'
                   view_info = 'off'
-                  //console.log("PASAMOS A => active ON view OFF " );
+                  //console.log("Change to => active ON view OFF " );
                 });
               }
-
 
               //console.log("active visible = " + active);
               active = 'off'
@@ -445,7 +431,7 @@
                 poster_behind2.setAttribute('visible', false);
                 active = 'on'
                 view_info = 'on'
-                //console.log("PASAMOS A => active OFF view ON " );
+                //console.log("Change to => active OFF view ON " );
               });
 
               if (info_ip_from != "" || info_ip_to != "") {
@@ -456,7 +442,7 @@
                   poster_behind2.setAttribute('visible', false);
                   active = 'on'
                   view_info = 'on'
-                  //console.log("PASAMOS A => active OFF view ON " );
+                  //console.log("Change to => active OFF view ON " );
                 });
               };
 
@@ -468,7 +454,7 @@
                   poster_behind2.setAttribute('visible', false);
                   active = 'on'
                   view_info = 'on'
-                  //console.log("PASAMOS A => active OFF view ON " );
+                  //console.log("Change to => active OFF view ON " );
                 });
               }
 
@@ -480,7 +466,7 @@
                   poster_behind2.setAttribute('visible', false);
                   active = 'on'
                   view_info = 'on'
-                  //console.log("PASAMOS A => active OFF view ON " );
+                  //console.log("Change to => active OFF view ON " );
                 });
               }
 
@@ -562,7 +548,7 @@
           var connections = {};
           var connections_eth = {};
           var connections_ip = {};
-          var all_packet = {};//Array de objetos{numero paquete,dir_src,dir_dst,delay}
+          var all_packet = {};//Array of objects{package number,dir_src,dir_dst,delay}
           var all_packet_info = {};
           var all_packet_eth = {};
           var all_packet_ip = {};
@@ -638,8 +624,6 @@
                 //console.log("IP UNICAS => " + ip_fin);;
 
                 let num_nodes_ip = ip_fin.length;
-                //console.log("Numero nodos finales IP => " + num_nodes_ip)
-
 
                 // We create a list of connections with activity
                 var comparison = [ip_src,ip_dst];
@@ -664,7 +648,7 @@
           var nodesP = []// ARRAY [nodo, coordenada]
           var position_nodes = []
 
-          // Depende de si queremos analizar capa ETHERNET o IP
+          // It depends on whether we want to analyze the ETHERNET or IP layer
           if (proto == "ip") {
             nodes = ip_fin // case to IP Address
           }else {
@@ -690,7 +674,7 @@
             entity.setAttribute('node','color',generarColor());
             entity.setAttribute('node','id',nodes[i]);
 
-            // Calcular las coordenadas X y Z para formar un circulo
+            // Calculate the X and Z coordinates to form a circle
             var connect_pos = []
             var change_pos = node_pos.split(" ")
 
@@ -716,21 +700,22 @@
             // We concatenate all of them into a single string
             var node_pos = cx.concat(' ', cy.concat(' ',cz))
             //var node_pos2 = cx.concat(',', cy.concat(',',cz))
-            //Incrementamos el angulo
+
+            //Increase the angle
             angle += increase;
 
-            //Añadimos la posicion al nodo
+            // Add the position to the node
             entity.setAttribute('node','position',node_pos);
             //console.log('NODE Position = ' + node_pos);
 
-            // Añadimos cada coordenada a su nodo
+            // Add each coordinate to its node
             nodesP.push(nodes[i])
             position_nodes.push(node_pos)
 
             // Add to the scene
             scene.appendChild(entity);
 
-            //---- Introducimos poster de cada Paquete ----
+            //---- Introduce poster of each Package ----
             var posterY_node = change_pos[1] * 6;
             var posterY_node_behind = change_pos[1] * 6;
             //console.log('POSITION Y = ' + posterY);
@@ -758,7 +743,7 @@
 
 //-------------------------- Create CONNECTIONS --------------------------------
 
-          // Depende de si queremos analizar capa ETHERNET o IP
+          // It depends on whether we want to analyze the ETHERNET or IP layer
           if (proto == "ip") {
             connections = connections_ip // case to IP Address
           }else {
@@ -773,7 +758,7 @@
             //console.log("Key => " + key_connections)
 
             var prop = connections[key_connections[i]];
-            // Para obtener el valor del las propiedad from y to
+            // To obtain the value of the property from and to
             //console.log("Direccion From => " + prop.from)
             // console.log("Direccion To => " + prop.to)
 
@@ -785,7 +770,7 @@
 
 //-------------------------- Create PACKETS -----------------------------------
 
-          // Depende de si queremos analizar capa ETHERNET o IP
+          // It depends on whether we want to analyze the ETHERNET or IP layer
          if (proto == "ip") {
             all_packet = all_packet_ip // case to IP Address
             all_packet_info = all_packet_eth
@@ -821,19 +806,12 @@
             //----------<<<<< IP Address >>>>>----------
             let acces_ip = data[i]._source[key].ip
 
-            //console.log("acces_ip " + i + " => " + Object.values(data[i]._source[key]));
-            //console.log("packet "+i)
-            //console.log("acces_ip  %O= ", data[i]._source[key].ip)
-
             if (acces_ip) {
               ip_dst_data = Object.values(acces_ip)[14]//Destination Address
               //console.log("Ip Address Destination " + i + " => " + ip_dst_data);
 
               ip_src_data = Object.values(acces_ip)[13]//Source Address
               //console.log("Ip Source Address " + i + " => " + ip_src_data);
-
-
-              //console.log('info_from_ip => ' + ip_src_data);
               entity3.setAttribute('packet','info_from_ip',ip_src_data);
               entity3.setAttribute('packet','info_to_ip',ip_dst_data);
 
@@ -907,7 +885,7 @@
                 http_url = "empty"
             }
 
-// Creamos array para utilizarlo en el setInterval ---------------------------
+// Create an array to use it in the setInterval ---------------------------
             //---------- <<<<<TIME RELATIVE >>>>>----------
             let acces_time = data[i]._source[key].frame
             let time_relative_data = 5000*Object.values(acces_time)[6]
@@ -950,7 +928,7 @@
             //console.log("objetos %O:",protocols)
 
             var LastValue = arrayFinal[arrayFinal.length - 1]
-            //console.log("Ultimo valor" + i + " => " + LastValue);
+            //console.log("Last Value" + i + " => " + LastValue);
 
             entity3.setAttribute('packet','id',id_packet);
             entity3.setAttribute('packet','start',time_relative_data);
@@ -994,7 +972,7 @@
       <a-entity id="simulator" net-simulator="file: 100packets_demo1.json; layout: line; proto: ip"></a-entity>
 
       <a-plane color="#CCC" height="2" width="2" position="7 10 2" text="width:5; color:black;align:center;
-        value:eth => blue\n
+              value:eth => blue\n
               ip => yellow\n
               tcp => red\n
               http => green;"></a-plane>
