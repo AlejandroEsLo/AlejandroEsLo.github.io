@@ -172,7 +172,7 @@
           data.pos_ini.x = Math.round(pos_from[0] * 100) / 100;
           data.pos_ini.y = pos_from[1]*y_packet;
           data.pos_ini.z = Math.round(pos_from[2] * 100) / 100;
-          console.log('Position from = ' , data.pos_ini);
+          //console.log('Position from = ' , data.pos_ini);
 
           // We obtain position Node To
           let node_to_el = document.getElementById(node_to);
@@ -183,7 +183,7 @@
           data.pos_end.x = Math.round(pos_to[0] * 100) / 100;
           data.pos_end.y = pos_to[1]*y_packet;
           data.pos_end.z = Math.round(pos_to[2] * 100) / 100;
-          console.log('Position end = ' , data.pos_end);
+          //console.log('Position end = ' , data.pos_end);
 
           el.setAttribute('geometry', {primitive: 'box'});
           el.setAttribute('material', 'color', data.color);
