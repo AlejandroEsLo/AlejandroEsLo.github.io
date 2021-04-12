@@ -844,7 +844,7 @@
 
             if (acces_http != undefined) {
               petition = Object.entries(acces_http)[2][0] //(http.request.line o http.response.line)
-              console.log("petition :"+ petition)
+              //console.log("petition :"+ petition)
             }
             //console.log("acces_http %O:",acces_http)
 
@@ -852,18 +852,18 @@
               //Destination Port
               in_http = Object.values(acces_http)[0]
               http_method = Object.values(in_http)[1] //GET
-              console.log("request.method " + i + " => " + http_method);
+              //console.log("request.method " + i + " => " + http_method);
               //Source Port
               http_url = Object.values(in_http)[2]  ///download.html
-              console.log("request.uri " + i + " => " + http_url);
+              //console.log("request.uri " + i + " => " + http_url);
 
             }else if (acces_http && petition == "http.response.line") {
               in_http = Object.values(acces_http)[0]
               http_method = Object.values(in_http)[3]// OK
-              console.log("request.method " + i + " => " + http_method);
+              //console.log("request.method " + i + " => " + http_method);
               //Source Port
               http_url = Object.values(in_http)[2] // 200
-              console.log("request.uri " + i + " => " + http_url);
+              //console.log("request.uri " + i + " => " + http_url);
 
             }else {
 
