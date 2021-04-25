@@ -24,9 +24,6 @@ Escena 4(Componente Net Simulator):
 Linear:
 https://alejandroeslo.github.io/TFG/Pruebas/Pasos_seguidos/Demos_componentes/P4_netSimulator(line).html
 
-Circular:
-https://alejandroeslo.github.io/TFG/P4_netSimulator(circle)_demo2.html
-
 DEMOS FINALES:
 https://alejandroeslo.github.io/TFG/Demo1_100Packets.html
 https://alejandroeslo.github.io/TFG/Demo2_HTTPPackets.html
