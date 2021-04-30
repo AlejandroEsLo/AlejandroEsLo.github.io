@@ -500,7 +500,6 @@
     AFRAME.registerComponent('net-simulator', {
       schema: {
         file: {type: 'string'},
-        layout: {type: 'string',default: 'circle'},
         proto: {type: 'string',default: 'eth'}, //eth or ip
       },
 
