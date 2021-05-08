@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>NET SIMULATOR</title>
+    <meta name="description" content="Start">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <!-- Button with A-Frame. -->
+    <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
+    <script src="https://rawgit.com/rdub80/aframe-gui/master/dist/aframe-gui.min.js"></script>
+
+    <script src="NetSimulator_pruebas.js"></script>
+
+  </head>
+
+  <body>
+    <a-scene background="color: #FAFAFA">
+      <a-camera position="0 5 10"></a-camera>
+      <a-entity environment="preset: starry"></a-entity>
+      <a-entity light="type: ambient; color: #FFF"></a-entity>
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <!-- Adds UI button widget -->
+      <a-entity id="mybutton" ui-button position= "0 5 0" rotation= "90 0 0" scale= "3 3 3"></a-entity>
+
+      <a-entity id="simulator" net-simulator="file: demo2_http.json; proto: ip"></a-entity>
+
+      <a-plane id="instructions" color="#CCC" height="6" width="7" position="7 6 2" visible="false" text="width:7; color:black;align:center;
+              value:
+              1) To put in operation the animation pressing the round button.\n
+
+              2) Wait to see the movement of the packages, and click again on the round button when we want to stop the animation, and again when we want to resume it.\n
+
+              3)Click on each package to deploy the layers, and click on each one of them to see its information.\n
+
+              4)Move through the scene with the arrows of the keyboard and with the mouse.;"></a-plane>
+
+      <!-- button instrucc -->
+      <a-gui-button id="button_inst" position="7 1 2" width="2.5" height="0.7" base-depth="0.025" depth="0.1"	gap="0.1"
+        		value="INSTRUCTIONS" font-size="0.25"	margin="0 0 0.05 0"
+        		font-color="black" active-color="red"	hover-color="yellow" border-color="white" focus-color="black"
+        		background-color="orange" toggle="true"	bevel="false"></a-gui-button>
+
+    </a-scene>
+  </body>
+</html>
