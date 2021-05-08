@@ -22,15 +22,23 @@
     <a-scene background="color: #FAFAFA">
       <a-entity environment="preset: starry"></a-entity>
       <a-entity light="type: ambient; color: #FFF"></a-entity>
-      <a-entity cursor="rayOrigin: mouse"></a-entity>
 
-      <!-- VR widget -->
+
+      <!-- VR widget
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
       <a-entity movement-controls="fly: true">
         <a-entity camera position="0 5 10" look-controls></a-entity>
       </a-entity>
 
       <a-entity oculus-touch-controls="hand: left"></a-entity>
       <a-entity oculus-touch-controls="hand: right"></a-entity>
+-->
+
+      <a-entity movement-controls="fly: true" position="0 0 0">
+        <a-entity camera position="0 5 10" look-controls></a-entity>
+        <a-entity cursor="rayOrigin:mouse"></a-entity>
+        <a-entity laser-controls="hand: right"></a-entity>
+      </a-entity>
 
 
       <!-- Adds UI button widget -->
