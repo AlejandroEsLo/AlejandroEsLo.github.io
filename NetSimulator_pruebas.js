@@ -937,24 +937,5 @@
 
         }
 
-        // boton instrucciones
-
-        var instructions = document.querySelector('#instructions');
-        var button_inst = document.querySelector('#button_inst');
-        //console.log("paquetes %O:",elements_packets)
-
-        var view = 'off'
-
-        button_inst.addEventListener('click', function () {
-          if (view == "off") {
-            instructions.setAttribute('visible', true);
-            view = 'on'
-          }else {
-            instructions.setAttribute('visible', false);
-            view = 'off'
-          }
-
-        });
-
       }
     });
