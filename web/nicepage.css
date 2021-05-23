@@ -363,11 +363,11 @@ span.fr-img-caption.fr-view {
 /*end-commonstyles library*//*begin-commonstyles library*/@charset "UTF-8";
 
 /*!
- * animate.css -https://daneden.github.io/animate.css/
- * Version - 3.7.2
+ * animate.css -http://daneden.me/animate
+ * Version - 3.7.0
  * Licensed under the MIT license - http://opensource.org/licenses/MIT
  *
- * Copyright (c) 2019 Daniel Eden
+ * Copyright (c) 2018 Daniel Eden
  */
 
 @-webkit-keyframes bounce {
@@ -3975,14 +3975,12 @@ span.fr-img-caption.fr-view {
   animation-duration: 3s;
 }
 
-@media (print), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion) {
   .animated {
-    -webkit-animation-duration: 1ms !important;
-    animation-duration: 1ms !important;
-    -webkit-transition-duration: 1ms !important;
-    transition-duration: 1ms !important;
-    -webkit-animation-iteration-count: 1 !important;
-    animation-iteration-count: 1 !important;
+    -webkit-animation: unset !important;
+    animation: unset !important;
+    -webkit-transition: none !important;
+    transition: none !important;
   }
 }
 /*end-commonstyles library*//*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */
@@ -33675,7 +33673,7 @@ a.u-link.u-text-hover-grey-90:hover {
 
 .u-header .u-menu-1 {
   font-family: size-14;
-  margin: 36px -48px 20px auto;
+  margin: 53px -12px 3px auto;
 }
 
 .u-header .u-nav-1 {
@@ -33686,15 +33684,11 @@ a.u-link.u-text-hover-grey-90:hover {
   font-size: 1rem;
 }
 @media (max-width: 1199px) {
-  .u-header .u-sheet-1 {
-    min-height: 64px;
-  }
-
   .u-header .u-menu-1 {
     width: auto;
-    margin-top: 32px;
+    margin-top: 34px;
     margin-right: -24px;
-    margin-bottom: 0;
+    margin-bottom: 22px;
   }
 }
 @media (max-width: 991px) {
